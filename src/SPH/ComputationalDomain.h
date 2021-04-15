@@ -53,7 +53,7 @@ struct ParticleRendererBuffer {
 };
 
 
-// Передавать одни и теже опции в SPH и в пары
+// РџРµСЂРµРґР°РІР°С‚СЊ РѕРґРЅРё Рё С‚РµР¶Рµ РѕРїС†РёРё РІ SPH Рё РІ РїР°СЂС‹
 struct SPH_OPTIONS {
 	unsigned int nrOfParticles[ALLTYPES];
 	NBSearchAlgorithm NBSAlg = DIRECT;
@@ -66,23 +66,24 @@ struct SPH_OPTIONS {
 
 
 	VAL_CHANGE_USING densityChangeUsing = DVAL_DT; //VAL;
-	int densityChangeAlgorithm = 0;
+	int densityChangeAlgorithm = 1;
 	int velocityChangeAlgorithm_pressurePart = 1;
-	int velocityChangeAlgorithm_viscosityPart = 1;
+	int velocityChangeAlgorithm_viscosityPart = 2;
 
 	DISTRIBUTION distributionREAL = UNIFORM;//RANDOM;
 	DISTRIBUTION distributionBOUNDARY = UNIFORM;
-	TIME_INTEGRATION_SCHEME timeIntegrationScheme = SECOND_ORDER_SCEME;
+	TIME_INTEGRATION_SCHEME timeIntegrationScheme = EXPLICIT;
 
 
-	BOUNDARY_HANDLING boundary_handling = RENORMALIZATION;
+	BOUNDARY_HANDLING boundary_handling = MIRROR_PARTICLES;
 
 
 	bool firstCycle = true;
 
-	bool cornerVP = true;
+	bool cornerVP = true; //true
 
 	bool IsStab = false;
+	bool Density_Diffusion_term = false;
 
 };
 
@@ -170,7 +171,7 @@ public:
 	void PPC_Density(ParticlePair* pp, std::vector<part_prec>* drhodt);
 	void PPC_InternalForces(ParticlePair* pp, std::vector<part_prec_3>* dvdt);
 	
-	// В идеале
+	// Р’ РёРґРµР°Р»Рµ
 	//  function approximation                1-st derivative approximation           2-nd derivative approximation
 	//
 	//  Sum(Wij*Vj) = 1                       Sum(Wij,x*Vj) = 0                       Sum(Wij,xx*Vj) = 0
@@ -181,7 +182,7 @@ public:
 	//  Sum((xj-xi)^n*Wij*Vj) = 0			  Sum((xj-xi)^n*Wij,x*Vj) = 0             Sum((xj-xi)^n*Wij,xx*Vj) = 0
 	//
 	//FINITE PARTICLE METHOD
-	//STANDART                                                                                                          в идеале матрица должна быть следующего вида:
+	//STANDART                                                                                                          РІ РёРґРµР°Р»Рµ РјР°С‚СЂРёС†Р° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ СЃР»РµРґСѓСЋС‰РµРіРѕ РІРёРґР°:
 	//  | Sum(fj*Wij*Vj)   |     | fi   |   | Sum(Wij*Vj)      Sum((xj-xi)*Wij*Vj)      Sum((yj-yi)*Wij*Vj)    |                      | 1    0   0  |
 	//  | Sum(fj*Wij,x*Vj) |  =  | fi,x | * | Sum(Wij,x*Vj)    Sum((xj-xi)*Wij,x*Vj)    Sum((yj-yi)*Wij,x*Vj)  |					  | 0    1   ?  |
 	//  | Sum(fj*Wij,y*Vj) |     | fi,y |   | Sum(Wij,y*Vj)    Sum((xj-xi)*Wij,y*Vj)    Sum((yj-yi)*Wij,y*Vj)  |					  | 0    ?   1  |
@@ -210,7 +211,7 @@ public:
 	void PPC_CorSPH_vec(ParticlePair* pp, std::vector<std::vector<part_prec>>* FPM_matrix, std::string param);
 
 
-
+	
 
 
 	void DensityCalculation(std::vector<part_prec>* drhodt, ParticlePair* pp);
@@ -221,6 +222,9 @@ public:
 	void VelocityRecalculation();
 	void DensityAndVelocityRecalculation();
 	void RecalcPrep();
+
+
+	void DensityDiffusiveTerm(std::vector<part_prec>* drhodt, ParticlePair* pp);
 
 
 	void RenormFactorCalc(std::vector<part_prec>* gamma, ParticlePair* pp);
