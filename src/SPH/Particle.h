@@ -4,8 +4,6 @@
 typedef double part_prec;
 typedef glm::highp_dvec3 part_prec_3;
 
-
-
 enum PARTICLETYPE
 {
 	REAL,
@@ -31,12 +29,12 @@ public:
 	Ch_ <part_prec_3> m_position;  //part_prec_3
 	Ch_ <part_prec_3> m_velocity;  //part_prec_3
 
-	float absVelocity;           //part_prec
+	part_prec absVelocity;           //part_prec
 	part_prec m_SmR;                 //part_prec
 	int nrOfNeighbours = 0;
 
 
-	Particle(int id, PARTICLETYPE type, glm::vec3 pos, glm::vec3 vel, float SmR, part_prec density, float mass)
+	Particle(int id, PARTICLETYPE type, glm::vec3 pos, glm::vec3 vel, part_prec SmR, part_prec density, float mass)
 		: m_id(id), m_type(type), m_SmR(SmR), m_mass(mass) {
 		m_position.val = pos; m_position.dval = part_prec_3(0.0);
 		m_velocity.val = vel; m_velocity.dval = part_prec_3(0.0);
@@ -56,22 +54,6 @@ public:
 		this->m_pressure.val = part->m_pressure.val;
 		this->m_pressure.dval = part->m_pressure.dval;
 		this->m_DVisc = part->m_DVisc;
-		//this->VirtualCounterpart = part->VirtualCounterpart;
-		//
-		//
-		//for (auto vcn : this->VirtualCounterpartNormals) {
-		//	part->VirtualCounterpartNormals.push_back(vcn);
-		//}
-		//for (auto vcf : this->VirtualCounterpartFlags) {
-		//	part->VirtualCounterpartFlags.push_back(vcf);
-		//}
-		//for (auto vcd : this->VC_DistanceToBoundary) {
-		//	part->VC_DistanceToBoundary.push_back(vcd);
-		//}
-		//for (auto vcv : this->VC_BoundaryVelocity) {
-		//	part->VC_BoundaryVelocity.push_back(vcv);
-		//}
-
 	}
 
 	~Particle() {
@@ -84,56 +66,35 @@ public:
 	//float correctiveKernel;
 
 	glm::vec3 oldAcceleration;
-	cd_prec m_mass;                //part_prec
-	Ch_<cd_prec> m_density;        //part_prec
-	Ch_<float> m_pressure;       //part_prec
+	part_prec m_mass;                //part_prec
+	Ch_<part_prec> m_density;        //part_prec
+	Ch_<part_prec> m_pressure;       //part_prec
 
-	float m_SoundVelocity;
-	float m_Temperature = 357.f;
-	float m_DVisc;
-	//std::vector<glm::vec3> m_eps;
+	part_prec m_SoundVelocity;
+	part_prec m_Temperature = 357.0;
+	part_prec m_DVisc;
 
+	–°D_Boundary* particle_boundary;
+	void assignToBoundary(–°D_Boundary* cd_boundaty) { particle_boundary = cd_boundaty; }
 
-
-
-
-
-
-	//part_prec distance_before_teleportation=0.0;
-	//part_prec_3 normal_of_periodic_boundary;
-	//part_prec_3 position_of_periodic_boundary;
-	//ƒÀﬂ —Œ«ƒ¿Õ»ﬂ ¬»–“”¿À‹Õ€’ ◊¿—“»÷
-	//bool VirtualCounterpart = false;
-	//std::vector<part_prec_3> VirtualCounterpartNormals;
-	//std::vector<bool> VirtualCounterpartFlags;
-	//std::vector<part_prec> VC_DistanceToBoundary;
-	//std::vector<bool> periodicBoundary;
-	//std::vector<part_prec_3> VC_DistanceToPeriodic;
-	//std::vector<part_prec_3> VC_Before_PeriodicVelocity;
-	//std::vector<part_prec_3> VC_Before_PeriodicPosition;
-	//std::vector<part_prec_3> VC_BoundaryVelocity;
-
-	—D_Boundary* particle_boundary;
-	void assignToBoundary(—D_Boundary* cd_boundaty) { particle_boundary = cd_boundaty; }
-
-	float dx(Particle* other) { return this->m_position.val.x - other->m_position.val.x; }
-	float dy(Particle* other) { return this->m_position.val.y - other->m_position.val.y; }
-	float dz(Particle* other) {	return this->m_position.val.z - other->m_position.val.z; }
-	float distance(Particle* other) { return std::sqrt(pow(this->dx(other), 2) + pow(this->dy(other), 2) + pow(this->dz(other), 2)); }
+	part_prec dx(Particle* other) { return this->m_position.val.x - other->m_position.val.x; }
+	part_prec dy(Particle* other) { return this->m_position.val.y - other->m_position.val.y; }
+	part_prec dz(Particle* other) {	return this->m_position.val.z - other->m_position.val.z; }
+	part_prec distance(Particle* other) { return std::sqrt(pow(this->dx(other), 2) + pow(this->dy(other), 2) + pow(this->dz(other), 2)); }
 
 
 
-	float dVx(Particle* other) { return this->m_velocity.val.x - other->m_velocity.val.x; }
-	float dVy(Particle* other) { return this->m_velocity.val.y - other->m_velocity.val.y; }
-	float dVz(Particle* other) { return this->m_velocity.val.z - other->m_velocity.val.z; }
+	part_prec dVx(Particle* other) { return this->m_velocity.val.x - other->m_velocity.val.x; }
+	part_prec dVy(Particle* other) { return this->m_velocity.val.y - other->m_velocity.val.y; }
+	part_prec dVz(Particle* other) { return this->m_velocity.val.z - other->m_velocity.val.z; }
 
 	part_prec_3 dV(Particle* other) { return { this->dVx(other),this->dVy(other),this->dVz(other) }; }
 
 
-	float dx(glm::vec3 pos) { return this->m_position.val.x - pos.x; }
-	float dy(glm::vec3 pos) { return this->m_position.val.y - pos.y; }
-	float dz(glm::vec3 pos) { return this->m_position.val.z - pos.z; }
-	float distance(glm::vec3 pos) { return std::sqrt(pow(this->dx(pos), 2) + pow(this->dy(pos), 2) + pow(this->dz(pos), 2)); }
+	part_prec dx(glm::vec3 pos) { return this->m_position.val.x - pos.x; }
+	part_prec dy(glm::vec3 pos) { return this->m_position.val.y - pos.y; }
+	part_prec dz(glm::vec3 pos) { return this->m_position.val.z - pos.z; }
+	part_prec distance(glm::vec3 pos) { return std::sqrt(pow(this->dx(pos), 2) + pow(this->dy(pos), 2) + pow(this->dz(pos), 2)); }
 	
 
 	void p_art_water() {
@@ -144,7 +105,8 @@ public:
 		//p = b * ((m_dens / Dens0)**gamma - 1)
 		//m_pressure.val = (b*pow((m_density.val / Dens0), gamma) - 1);
 		m_pressure.val = Dens0 * pow(m_SoundVelocity,2) / gamma * (pow(m_density.val / Dens0, gamma) - 1.f);
-		//std::cout << "pressure = " << Dens0 << "*" << pow(m_SoundVelocity, 2) << "/" << gamma << "*(" << "(" << m_density.val / Dens0 << ")^" << gamma << "-" << 1.f << ")" << "=" << m_pressure.val << "\n";
+		if(m_id == 4900 - 1)
+			std::cout << "pressure = " << Dens0 << "*" << pow(m_SoundVelocity, 2) << "/" << gamma << "*(" << "(" << m_density.val <<"/"<< Dens0 << ")^" << gamma << "-" << 1.f << ")" << "=" << m_pressure.val << "\n";
 	}
 	void p_gas() {
 		float gamma = 1.4f;
@@ -175,18 +137,10 @@ private:
 			m_DVisc = 1.0E-03;
 
 
-		m_DVisc = 1000E-06;
+		m_DVisc = 1000E-03;
 	}
-
-
-
-
-
-
 public: 
 	glm::vec3 InitPolygonNormal;// = glm::vec3(0.f);
 	glm::vec3 GetNormal() { return this->InitPolygonNormal; }
 };
-
-
 
