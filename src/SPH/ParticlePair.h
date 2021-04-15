@@ -150,7 +150,7 @@ private:
 	DIMENSIONS m_dim;
 	Kernel* mode;
 public:
-	int m_PairId; // Номер пары 
+	int m_PairId; // РќРѕРјРµСЂ РїР°СЂС‹ 
 	Particle* Mpart_ptr;
 	Particle* NBpart_ptr;
 	void ChangeKernel(Kernel* k) { mode = k; }
@@ -206,8 +206,8 @@ public:
 			else if (part_ptr == NBpart_ptr)   dWd *= part_ptr->dz(Mpart_ptr) / m_distance * factor;
 			break;
 		case R:
-			if (part_ptr == Mpart_ptr) dWd= dWd* calcFactor(D1);
-			else if (part_ptr == NBpart_ptr) dWd= dWd* calcFactor(D1);
+			if (part_ptr == Mpart_ptr) dWd= dWd* calcFactor(D2);
+			else if (part_ptr == NBpart_ptr) dWd= dWd* calcFactor(D2);
 			
 			break;
 		default:
@@ -242,8 +242,8 @@ public:
 				d2Wd *= factor;
 				break;
 			case R:
-				if (part_ptr == Mpart_ptr)  d2Wd = mode->d2Wdr2(m_Rds, m_aveSmR)* calcFactor(D1);
-				else if (part_ptr == NBpart_ptr)  d2Wd = mode->d2Wdr2(m_Rds, m_aveSmR)* calcFactor(D1);
+				if (part_ptr == Mpart_ptr)  d2Wd = mode->d2Wdr2(m_Rds, m_aveSmR)* calcFactor();
+				else if (part_ptr == NBpart_ptr)  d2Wd = mode->d2Wdr2(m_Rds, m_aveSmR)* calcFactor();
 				
 				break;
 			default:
@@ -268,8 +268,8 @@ public:
 
 
 	inline part_prec_3 vec_e(Particle* part_ptr) {
-		if (part_ptr == Mpart_ptr) return part_prec_3{ part_ptr->dx(NBpart_ptr) / m_distance,part_ptr->dy(NBpart_ptr) / m_distance ,part_ptr->dz(NBpart_ptr) / m_distance };
-		else if (part_ptr == NBpart_ptr) return part_prec_3{ part_ptr->dx(Mpart_ptr) / m_distance,part_ptr->dy(Mpart_ptr) / m_distance ,part_ptr->dz(Mpart_ptr) / m_distance };		
+		if (part_ptr == Mpart_ptr) return part_prec_3{ part_ptr->dx(NBpart_ptr) / (m_distance*(1 + m_aveSmR*0.01)),part_ptr->dy(NBpart_ptr) / (m_distance*(1 + m_aveSmR * 0.01)) ,part_ptr->dz(NBpart_ptr) / (m_distance*(1 + m_aveSmR * 0.01)) };
+		else if (part_ptr == NBpart_ptr) return part_prec_3{ part_ptr->dx(Mpart_ptr) / (m_distance*(1 + m_aveSmR * 0.01)),part_ptr->dy(Mpart_ptr) / (m_distance*(1 + m_aveSmR * 0.01)) ,part_ptr->dz(Mpart_ptr) / (m_distance*(1 + m_aveSmR * 0.01)) };
 	}
 
 	inline part_prec getDist() {
@@ -279,11 +279,11 @@ public:
 
 public:
 
-	typedef float(Particle::*dsmthFunc)(Particle*);
-	typedef float(Particle::*dsmthFuncvec3pos)(glm::vec3);
+	typedef part_prec(Particle::*dsmthFunc)(Particle*);
+	typedef part_prec(Particle::*dsmthFuncvec3pos)(glm::vec3);
 
 	ParticlePair(Particle* mpart, Particle* nbpart, DIMENSIONS dim)
-		: Mpart_ptr(new Particle(mpart)), NBpart_ptr(new Particle(nbpart)), mode(new QubicSpline()){
+		: Mpart_ptr(mpart), NBpart_ptr(nbpart), mode(new QuinticSpline()){
 		//std::cout << "PariclePair constructor\n";
 		if(!((mpart->m_type == BOUNDARY) or (nbpart->m_type == BOUNDARY))){
 			mpart->addNeighbour();
@@ -329,14 +329,16 @@ public:
 
 	~ParticlePair() {
 		//std::cout << "PariclePair destructor\n";
-		delete Mpart_ptr;
-		delete NBpart_ptr;
+		//std::cout << "~ParticlePair()\n";
+		//std::cout << "  "<< Mpart_ptr->m_id << " " << NBpart_ptr->m_id << "\n";
+		//delete Mpart_ptr;
+		//delete NBpart_ptr;
 		delete mode;
 	}
 
 
-	float dvfunc(dsmthFunc pfcn) {
-		float retVal = (Mpart_ptr->*pfcn)(NBpart_ptr);
+	part_prec dvfunc(dsmthFunc pfcn) {
+		part_prec retVal = (Mpart_ptr->*pfcn)(NBpart_ptr);
 		return retVal;
 	}
 
