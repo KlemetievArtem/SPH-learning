@@ -33,11 +33,6 @@ glm::mat3x3 Zrot(float radians) {
 	return Retval;
 };
 
-
-
-
-
-
 void SPH_CD::Initilization() {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG)	{
 		std::cout << "SPH_CD::Initilization\n";
@@ -55,7 +50,7 @@ void SPH_CD::Initilization() {
 
 	dx = (1.0f) / static_cast<float>(Nx);
 	dy = (1.0f) / static_cast<float>(Ny);
-	dz = (1.f) / static_cast<float>(Nz);
+	dz = (1.0f) / static_cast<float>(Nz);
 
 	float Xstart = getXmin() + dx / 2;
 	float Ystart = getYmin() + dy / 2;
@@ -173,15 +168,15 @@ void SPH_CD::Initilization() {
 			Plane1 = pos1;
 			Plane2 = pos2;
 			Plane3 = pos3;
-			//«Ì‡ˇ ÚË ÚÓ˜ÍË, ÏÓÊÌÓ ÓÔÂ‰ÂÎËÚ¸ ÙÛÌÍˆË˛ ÔÎÓÒÍÓÒÚË
+			//–ó–Ω–∞—è —Ç—Ä–∏ —Ç–æ—á–∫–∏, –º–æ–∂–Ω–æ –æ–ø—Ä–µ–¥–µ–ª–∏—Ç—å —Ñ—É–Ω–∫—Ü–∏—é –ø–ª–æ—Å–∫–æ—Å—Ç–∏
 			PlaneCoefA = (Plane2.y - Plane1.y)*(Plane3.z - Plane1.z) - (Plane3.y - Plane1.y)*(Plane2.z - Plane1.z);
 			PlaneCoefB = -(Plane2.x - Plane1.x)*(Plane3.z - Plane1.z) - (Plane3.x - Plane1.x)*(Plane2.z - Plane1.z);
 			PlaneCoefC = (Plane2.x - Plane1.x)*(Plane3.y - Plane1.y) - (Plane3.x - Plane1.x)*(Plane2.y - Plane1.y);
 			PlaneCoefD = -Plane1.x*PlaneCoefA - Plane1.y*PlaneCoefB - Plane1.z*PlaneCoefC;
 			//std::cout << PlaneCoefA << "*x + " << PlaneCoefB << "*y + " << PlaneCoefC << "*z + " << PlaneCoefD << " =  0\n";
-			//ƒ‡ÎÂÂ ÓÔÂ‰ÂÎËÏ, ÎËÌË˛ ÔÂÂÒÂ˜ÂÌËÂ ÔÓÎÛ˜ÂÌÌÓÈ ÔÎÓÒÍÓÒÚË Ò ÔÎÓÒÍÓÒÚ¸˛ OXY  (z=0):
+			//–î–∞–ª–µ–µ –æ–ø—Ä–µ–¥–µ–ª–∏–º, –ª–∏–Ω–∏—é –ø–µ—Ä–µ—Å–µ—á–µ–Ω–∏–µ –ø–æ–ª—É—á–µ–Ω–Ω–æ–π –ø–ª–æ—Å–∫–æ—Å—Ç–∏ —Å –ø–ª–æ—Å–∫–æ—Å—Ç—å—é OXY  (z=0):
 			// x*PlaneCoefA + y*PlaneCoefB + PlaneCoefD = 0
-			//ŒÔÂ‰ÂÎËÏ ÔÂÂÒÂ˜ÂÌËÂ ˝ÚÓÈ ÎËÌËË Ò Í‡Ê‰ÓÈ ÎËÌËÂÈ, ËÁ ÍÓÚÓ˚ı ÒÓÒÚÓËÚ ÔÓÎË„ÓÌ
+			//–û–ø—Ä–µ–¥–µ–ª–∏–º –ø–µ—Ä–µ—Å–µ—á–µ–Ω–∏–µ —ç—Ç–æ–π –ª–∏–Ω–∏–∏ —Å –∫–∞–∂–¥–æ–π –ª–∏–Ω–∏–µ–π, –∏–∑ –∫–æ—Ç–æ—Ä—ã—Ö —Å–æ—Å—Ç–æ–∏—Ç –ø–æ–ª–∏–≥–æ–Ω
 
 			glm::vec3 interP;
 			std::vector<glm::vec3> PolyLine0 = { pos1 ,pos2 ,pos3 };
@@ -583,25 +578,6 @@ void SPH_CD::Initilization() {
 
 }
 
-
-
-
-/*
-//!!!!!!!!!!!!!!!!“˚ ÚÛÚ ‚ÓÓ·˘Â ˜ÚÓ ‰ÂÎ‡Â¯¸?!!!!!!!!!!!!!!!!!!!!!!!!
-void SPH_CD::InitialRendering(std::vector<Mesh*>* meshes) {
-	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
-		std::cout << "SPH_CD::InitialRendering\n";
-	}
-	//Coloring();
-
-	for (auto*& i : SPH.Particles){
-		//meshes->push_back(new Mesh(&Qube(color), i->m_position.val, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(i->m_SmR*0.1)));
-		meshes->push_back(new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, i->m_color), i->m_position.val, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(i->m_SmR*0.125)));
-	}
-}
-*/
-
-
 #define PARTICLE_IS(type) (i->m_type == PARTICLETYPE::type)
 #define PARTICLE_IS_NOT(type) (i->m_type != PARTICLETYPE::type)
 #define ANY_PARTICLE (true)
@@ -609,6 +585,9 @@ void SPH_CD::InitialRendering(std::vector<Mesh*>* meshes) {
 
 
 void SPH_CD::PRB_refresh() {
+	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
+		std::cout << "SPH_CD::PRB_refresh\n";
+	}
 	PRB.clear();
 	for (auto*& i : SPH.Particles) {
 		//if (PARTICLE_IS(REAL)) {
@@ -617,13 +596,11 @@ void SPH_CD::PRB_refresh() {
 		}
 	}
 }
-
-
 void SPH_CD::UpdateRendering(std::vector<Model*>* models) {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 		std::cout << "SPH_CD::UpdateRendering\n";
 	}
-	//–≈Õƒ≈–»Õ√ ¬»–“”¿À‹Õ€’ ◊¿—“»÷
+	//–†–ï–ù–î–ï–†–ò–ù–ì –í–ò–†–¢–£–ê–õ–¨–ù–´–• –ß–ê–°–¢–ò–¶
 	for (auto*& i : (*models)[ModelId]->meshes) {
 		delete i;
 	}
@@ -639,6 +616,7 @@ void SPH_CD::AfterRendering() {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 		std::cout << "SPH_CD::AfterRendering\n";
 	}
+	deletingParticlePairs();
 	if (m_options.boundary_handling == RENORMALIZATION) {
 
 	}
@@ -652,37 +630,29 @@ void SPH_CD::AfterRendering() {
 		}
 	}
 }
-
-
-void SPH_CD::AfterRendering(std::vector<Model*>* models) {
-	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
-		std::cout << "SPH_CD::AfterRendering\n";
-	}
-
-	//”ƒ¿À≈Õ»≈ ¬»–“”¿À‹Õ€’ ◊¿—“»÷ (œŒ ’Œ–Œÿ≈Ã” ŒÕŒ ƒŒÀ∆ÕŒ Õ¿’Œƒ»“—ﬂ ¬  ŒÕ÷≈ SINGLSTEP'¿)
-	if (m_options.nrOfParticles[PARTICLETYPE::VIRTUAL] != 0) {
-		for (int i = 0; i < m_options.nrOfParticles[PARTICLETYPE::VIRTUAL];i++) {
-			delete SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] + m_options.nrOfParticles[PARTICLETYPE::BOUNDARY] + i];
-		}
-		SPH.Particles.resize(m_options.nrOfParticles[PARTICLETYPE::REAL] + m_options.nrOfParticles[PARTICLETYPE::BOUNDARY]);
-		m_options.nrOfParticles[PARTICLETYPE::VIRTUAL] = 0;
-	}
-}
+void SPH_CD::AfterRendering(std::vector<Model*>* models) {}
 
 void SPH_CD::timeStep(cd_prec dt) {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 		std::cout << "SPH_CD::timeStep\n";
 	}
 
-	
+	//Saving values from previous step to render
+	{
+  		AfterRendering();
+		BM.resetTeleportationData();
+		RecalcPrep();
+		//ColoringBtType();
+		Coloring();
+		PRB_refresh();
+	}
 
 
-
-
-	//setDeltaTime(dt);
+	//Reseting needed values
 	for (auto*& i : SPH.Particles) {
 		i->m_velocity.dval = part_prec_3(0.f);
 	}
+
 	if (m_options.firstCycle == false) {
 		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 			std::cout << "SPH_CD::timeIntegration\n";
@@ -690,17 +660,15 @@ void SPH_CD::timeStep(cd_prec dt) {
 
 		switch (m_options.timeIntegrationScheme) {
 		case(EXPLICIT): 
-			////œÓÎÌÓÒÚ¸˛ ˇ‚Ì‡ˇ ÒıÂÏ‡
-			//DensityCalculation();
-			//PressurePartCalculation();
-			//ViscosityPartCalculation();
-			//i->m_position.dval = i->m_velocity.val;
-			//i->m_velocity.val += i->m_velocity.dval * dt;
-			//i->m_position.val += i->m_position.dval * dt;
-			//i->m_density.val += i->m_density.dval * dt;
-			AfterRendering();
-			BM.resetTeleportationData();
-			RecalcPrep();
+		////–ü–æ–ª–Ω–æ—Å—Ç—å—é —è–≤–Ω–∞—è —Å—Ö–µ–º–∞
+		//DensityCalculation();
+		//PressurePartCalculation();
+		//ViscosityPartCalculation();
+		//i->m_position.dval = i->m_velocity.val;
+		//i->m_velocity.val += i->m_velocity.dval * dt;
+		//i->m_position.val += i->m_position.dval * dt;
+		//i->m_density.val += i->m_density.dval * dt;
+		{
 			DensityAndVelocityRecalculation();
 			ExternalForces();
 			deletingParticlePairs();
@@ -724,27 +692,23 @@ void SPH_CD::timeStep(cd_prec dt) {
 						break;
 					}
 					i->p_art_water();
-
-
-
 				}
 			}
+		}
 			break;
 		case(IMPLICIT):
-			////œÓÎÌÓÒÚ¸˛ ÌÂˇ‚Ì‡ˇ ÒıÂÏ‡
-			//while(condition){
-			//	PressurePartCalculation();
-			//	ViscosityPartCalculation();
-			//	i->m_velocity.val += i->m_velocity.dval * dt;
-			//	i->m_position.dval = i->m_velocity.val;
-			//	i->m_position.val += i->m_position.dval * dt;
-			//	DensityCalculation();
-			//	i->m_density.val += i->m_density.dval * dt;
-			//}
+		////–ü–æ–ª–Ω–æ—Å—Ç—å—é –Ω–µ—è–≤–Ω–∞—è —Å—Ö–µ–º–∞
+		//while(condition){
+		//	PressurePartCalculation();
+		//	ViscosityPartCalculation();
+		//	i->m_velocity.val += i->m_velocity.dval * dt;
+		//	i->m_position.dval = i->m_velocity.val;
+		//	i->m_position.val += i->m_position.dval * dt;
+		//	DensityCalculation();
+		//	i->m_density.val += i->m_density.dval * dt;
+		//}
+		{
 			while (false) {
-				AfterRendering();
-				BM.resetTeleportationData();
-				RecalcPrep();
 				VelocityRecalculation();
 				ExternalForces();
 				deletingParticlePairs();
@@ -780,20 +744,22 @@ void SPH_CD::timeStep(cd_prec dt) {
 						i->p_art_water();
 					}
 				}
+				AfterRendering();
+				BM.resetTeleportationData();
+				RecalcPrep();
 			}
+		}
 			break;
 		case(SEMI_IMPICIT):
-			////œÓÎÛÌÂˇ‚Ì‡ˇ ÒıÂÏ‡
-			//PressurePartCalculation();
-			//ViscosityPartCalculation();
-			//i->m_velocity.val += i->m_velocity.dval * dt;
-			//i->m_position.dval = i->m_velocity.val;
-			//i->m_position.val += i->m_position.dval * dt;
-			//DensityCalculation();
-			//i->m_density.val += i->m_density.dval * dt;
-			AfterRendering();
-			BM.resetTeleportationData();
-			RecalcPrep();
+		////–ü–æ–ª—É–Ω–µ—è–≤–Ω–∞—è —Å—Ö–µ–º–∞
+		//PressurePartCalculation();
+		//ViscosityPartCalculation();
+		//i->m_velocity.val += i->m_velocity.dval * dt;
+		//i->m_position.dval = i->m_velocity.val;
+		//i->m_position.val += i->m_position.dval * dt;
+		//DensityCalculation();
+		//i->m_density.val += i->m_density.dval * dt;
+		{
 			VelocityRecalculation();
 			ExternalForces();
 			deletingParticlePairs();
@@ -828,28 +794,31 @@ void SPH_CD::timeStep(cd_prec dt) {
 					i->p_art_water();
 				}
 			}
+		}
 			break;
 		case(SECOND_ORDER_SCEME):
-			////ÒıÂÏ‡ ‚ÚÓÓ„Ó ÔÓˇ‰Í‡
-			//PressurePartCalculation();
-			//ViscosityPartCalculation();
-			//i->m_position.dval = i->m_velocity.val;
-			//i->m_position.val += i->m_position.dval * dt/2.0;
-			//PressurePartCalculation();
-			//ViscosityPartCalculation();
-			//i->m_velocity.val += i->m_velocity.dval * dt;
-			//i->m_position.dval = i->m_velocity.val;
-			//i->m_position.val += i->m_position.dval * dt / 2.0;
-			//DensityCalculation();
-			//i->m_density.val += i->m_density.dval * dt;
-			AfterRendering();
-			BM.resetTeleportationData();
-			RecalcPrep();
+		////—Å—Ö–µ–º–∞ –≤—Ç–æ—Ä–æ–≥–æ –ø–æ—Ä—è–¥–∫–∞
+		//PressurePartCalculation();
+		//ViscosityPartCalculation();
+		//DensityCalculation();
+		//i->m_position.dval = i->m_velocity.val;
+		//i->m_position.val += i->m_position.dval * dt/2.0;
+		// part_prec old_rho = i->m_density.val;
+		//i->m_density.val += i->m_density.dval * dt/2.0;
+		//DensityCalculation();
+		//PressurePartCalculation();
+		//ViscosityPartCalculation();
+		//i->m_velocity.val += i->m_velocity.dval * dt;
+		//i->m_position.dval = i->m_velocity.val;
+		//i->m_position.val += i->m_position.dval * dt / 2.0;
+		//	part_prec Eps_rho = -(i->m_density.dval/i->m_density.val)*dt
+		//i->m_density.val  = old_rho*(2-Eps_rho)/(2+Eps_rho)
+		{
 			deletingParticlePairs();
 			for (auto*& i : SPH.Particles) {
 				if (i->m_type == PARTICLETYPE::REAL) {
 					//TELEPORTING
-					part_prec_3 pos_prediction = i->m_velocity.val * dt/2.0;
+					part_prec_3 pos_prediction = i->m_velocity.val * dt / 2.0;
 					if ((BM.TeleportationLinks.count(i->m_id) == 1) and (BM.TeleportationLinks[i->m_id].distanceToBoundary() != 0.0) and ((sqrt(pow(pos_prediction.x, 2) + pow(pos_prediction.y, 2) + pow(pos_prediction.z, 2))) != 0.0)) {
 						double n_vel_cos_angle = ((pos_prediction.x*(-BM.TeleportationLinks[i->m_id].boundaryNormal().x)) + (pos_prediction.y*(-BM.TeleportationLinks[i->m_id].boundaryNormal().y)) + (pos_prediction.z*(-BM.TeleportationLinks[i->m_id].boundaryNormal().z))) / (sqrt(pow(pos_prediction.x, 2) + pow(pos_prediction.y, 2) + pow(pos_prediction.z, 2))*sqrt(pow(-BM.TeleportationLinks[i->m_id].boundaryNormal().x, 2) + pow(-BM.TeleportationLinks[i->m_id].boundaryNormal().y, 2) + pow(-BM.TeleportationLinks[i->m_id].boundaryNormal().z, 2)));
 						if ((sqrt(pow(pos_prediction.x, 2) + pow(pos_prediction.y, 2) + pow(pos_prediction.z, 2))*n_vel_cos_angle > BM.TeleportationLinks[i->m_id].distanceToBoundary()) and (n_vel_cos_angle > 0.0))
@@ -861,6 +830,9 @@ void SPH_CD::timeStep(cd_prec dt) {
 			BM.resetTeleportationData();
 			AfterRendering();
 			RecalcPrep();
+			DensityRecalculation();
+			std::vector<part_prec> old_rho;
+			old_rho.resize(SPH.Particles.size(), 0.f);
 			VelocityRecalculation();
 			ExternalForces();
 			deletingParticlePairs();
@@ -875,66 +847,30 @@ void SPH_CD::timeStep(cd_prec dt) {
 							pos_prediction += BM.TeleportationLinks[i->m_id].teleportingDistance();
 					}
 					i->m_position.val += pos_prediction;
+					old_rho[i->m_id] = i->m_density.val;
+					i->m_density.val += i->m_density.dval * dt / 2.0;
 				}
 			}
 			AfterRendering();
 			RecalcPrep();
 			DensityRecalculation();
+			std::vector<part_prec> Eps_rho;
+			Eps_rho.resize(SPH.Particles.size(), 0.f);
 			deletingParticlePairs();
 			for (auto*& i : SPH.Particles) {
 				if (i->m_type == PARTICLETYPE::REAL) {
-					switch (m_options.densityChangeUsing) {
-					case(VAL):
-						i->m_density.val = i->m_density.dval;
-						break;
-					case(DVAL_DT):
-						i->m_density.val += i->m_density.dval * dt;
-						break;
-					}
+					Eps_rho[i->m_id] = -(i->m_density.dval / i->m_density.val)*dt;
+					i->m_density.val = old_rho[i->m_id] * (2.0 - Eps_rho[i->m_id]) / (2.0 + Eps_rho[i->m_id]);
 					i->p_art_water();
 				}
 			}
+		}
 			break;
 		case(NONE):
-			RecalcPrep();
-			deletingParticlePairs();
 			break;
 		default:
 			break;
 		}
-
-
-		//BM.resetTeleportationData();
-		//RecalcPrep();
-		//DensityAndVelocityRecalculation();
-		//ExternalForces();
-		//deletingParticlePairs();
-		//
-		//
-		//if (!m_options.IsStab) {
-		//	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
-		//		std::cout << "SPH_CD::timeIntegration\n";
-		//	}
-		//	for (auto*& i : SPH.Particles) {
-		//		if (i->m_type == PARTICLETYPE::BOUNDARY) {
-		//			switch (m_options.densityChangeAlgorithm) {
-		//			case(2):
-		//				i->m_density.val = i->m_density.dval;
-		//				break;
-		//			default:
-		//				i->m_density.val += i->m_density.dval * dt;
-		//				break;
-		//			}
-		//		}
-		//		//if (i->m_type == PARTICLETYPE::REAL) {
-		//			//	std::cout << i->m_id << "   " << i->m_velocity.dval.x << ", " << i->m_velocity.dval.y << ", " << i->m_velocity.dval.z << "\n";
-		//			//std::cout << i->m_id << "   " << i->m_density.val << "\n";
-		//		//}
-		//	}
-		//}
-		//
-		//
-
 
 		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 			std::cout << "	id:		first:" << SPH.Particles[0]->m_id << "	";
@@ -959,11 +895,6 @@ void SPH_CD::timeStep(cd_prec dt) {
 		}
 	}
 	else {
-		RecalcPrep();
-		deletingParticlePairs();
-		for (auto*& i : SPH.Particles) {
-			i->p_art_water();
-		}
 		m_options.firstCycle = false;
 	}
 
@@ -974,12 +905,9 @@ void SPH_CD::timeStep(cd_prec dt) {
 	//PRB_refresh();
 
 
-	Coloring();
-	//ColoringBtType();
-	PRB_refresh();
 	//if (computationalDomain_mode == MODE_CD::CD_DEBUG) { std::cout << "SPH_CD::Deleting_Pairs\n"; }
 	//deletingVirtualParticles();
-	// “≈¡ﬂ ÃŒ∆ÕŒ » œŒ –¿Õ‹ÿ≈
+	// –¢–ï–ë–Ø –ú–û–ñ–ù–û –ò –ü–û –†–ê–ù–¨–®–ï
 	
 	SaveMaxVelocity();
 
@@ -989,7 +917,6 @@ void SPH_CD::timeStep(cd_prec dt) {
 	std::cout << "current timeStep: " << getDeltaTime() << "   minimal time scale: " << getStatMinTime() << "\n";
 	if (getStatMinTime() < getDeltaTime()) { setDeltaTime(getStatMinTime()); }
 	else { setDeltaTime(getInitialDeltaTime()); }
-	std::cout << "\n";
 
 }
 
@@ -1018,30 +945,20 @@ void SPH_CD::neighbourSearch() {
 			}
 		}
 		*/
-		// œ˚Ú‡ÂÏÒˇ ËÁ·ÂÊ‡Ú¸ ÎË¯ÌËı Ô‡
-		for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 ÂÚ.Í. Û ÔÓÒÎÂ‰ÌÂ„Ó ÛÊÂ ÌÂÚÛ ÒÓÒÂ‰ÂÈ
+		// –ü—ã—Ç–∞–µ–º—Å—è –∏–∑–±–µ–∂–∞—Ç—å –ª–∏—à–Ω–∏—Ö –ø–∞—Ä
+		for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 –µ—Ç.–∫. —É –ø–æ—Å–ª–µ–¥–Ω–µ–≥–æ —É–∂–µ –Ω–µ—Ç—É —Å–æ—Å–µ–¥–µ–π
 			
 			Particle* i_p = SPH.Particles[i];
-
-			//SPH.Particles[i]->VirtualCounterpartNormals.resize(0);
-			//SPH.Particles[i]->VirtualCounterpartFlags.resize(0);
-			//SPH.Particles[i]->VC_DistanceToBoundary.resize(0);
-			//SPH.Particles[i]->VC_BoundaryVelocity.resize(0);
-			//SPH.Particles[i]->VirtualCounterpart = false;
-			//SPH.Particles[i]->periodicBoundary.resize(0);
-			//SPH.Particles[i]->VC_DistanceToPeriodic.resize(0);
-			//SPH.Particles[i]->VC_Before_PeriodicPosition.resize(0);
-			//SPH.Particles[i]->VC_Before_PeriodicVelocity.resize(0);
 
 			BM.resetBoundaryData();
 
 
 			//std::cout << i_p->m_id << "_th particle has neighbours: \n";
-			for (int j = i+1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 ÂÚ.Í. Û ÔÓÒÎÂ‰ÌÂ„Ó ÛÊÂ ÌÂÚÛ ÒÓÒÂ‰ÂÈ
+			for (int j = i+1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 –µ—Ç.–∫. —É –ø–æ—Å–ª–µ–¥–Ω–µ–≥–æ —É–∂–µ –Ω–µ—Ç—É —Å–æ—Å–µ–¥–µ–π
 				Particle* j_p = SPH.Particles[j];
 				if (i_p == j_p)
 					continue;
-				if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) // ÕÂ Û˜ËÚ˚‚‡ÂÏ Ô‡˚ √‡ÌËˆ‡-√‡ÌËˆ‡  
+				if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) // –ù–µ —É—á–∏—Ç—ã–≤–∞–µ–º –ø–∞—Ä—ã –ì—Ä–∞–Ω–∏—Ü–∞-–ì—Ä–∞–Ω–∏—Ü–∞  
 					continue;
 				if (i_p->distance(j_p) <= m_options.smoothingKernelLengthCoefficient * i_p->m_SmR) {
 					//std::cout << j_p->m_id << "\n";
@@ -1127,21 +1044,23 @@ void SPH_CD::neighbourSearch() {
 		std::cout << "Rho/(dx*dy) = " << density / m_options.nrOfParticles[REAL] << "\n";
 		std::cout <<"averageNrOfNeighbours =  " << averageNrOfNeighbours << ", New mass = Rho/n/aveW =  " << mass << "\n";
 		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
-			std::cout << "				Changing mass from " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] / 2]->m_mass << " to " << mass << "\n";
+			std::cout << "				Changing mass from " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] / 2]->m_mass << " to " << mass << ".";
 		}
 
 		for (auto*& i : SPH.Particles) {
 			i->m_mass = mass;
 		}
+		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
+			std::cout << " Default mass was changed.\n" ;
+		}
 		//m_options.firstCycle = false;
 
+		deletingParticlePairs();
+		//for (auto*& i : SPH.ParticlePairs) {
+		//	safeDelete(&i);
+		//}
+		//SPH.ParticlePairs.resize(0);
 
-
-
-		for (auto*& i : SPH.ParticlePairs) {
-			safeDelete(&i);
-		}
-		SPH.ParticlePairs.resize(0);
 
 		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 			std::cout << "SPH_CD::neighbourSearch_again\n";
@@ -1165,8 +1084,8 @@ void SPH_CD::neighbourSearch() {
 			}
 		}
 		*/
-		// œ˚Ú‡ÂÏÒˇ ËÁ·ÂÊ‡Ú¸ ÎË¯ÌËı Ô‡
-			for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 ÂÚ.Í. Û ÔÓÒÎÂ‰ÌÂ„Ó ÛÊÂ ÌÂÚÛ ÒÓÒÂ‰ÂÈ
+		// –ü—ã—Ç–∞–µ–º—Å—è –∏–∑–±–µ–∂–∞—Ç—å –ª–∏—à–Ω–∏—Ö –ø–∞—Ä
+			for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 –µ—Ç.–∫. —É –ø–æ—Å–ª–µ–¥–Ω–µ–≥–æ —É–∂–µ –Ω–µ—Ç—É —Å–æ—Å–µ–¥–µ–π
 			
 				Particle* i_p = SPH.Particles[i];
 
@@ -1186,11 +1105,11 @@ void SPH_CD::neighbourSearch() {
 
 
 				//std::cout << i_p->m_id << "_th particle has neighbours: \n";
-				for (int j = i+1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 ÂÚ.Í. Û ÔÓÒÎÂ‰ÌÂ„Ó ÛÊÂ ÌÂÚÛ ÒÓÒÂ‰ÂÈ
+				for (int j = i+1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 –µ—Ç.–∫. —É –ø–æ—Å–ª–µ–¥–Ω–µ–≥–æ —É–∂–µ –Ω–µ—Ç—É —Å–æ—Å–µ–¥–µ–π
 					Particle* j_p = SPH.Particles[j];
 					if (i_p == j_p)
 						continue;
-					if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) // ÕÂ Û˜ËÚ˚‚‡ÂÏ Ô‡˚ √‡ÌËˆ‡-√‡ÌËˆ‡  
+					if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) // –ù–µ —É—á–∏—Ç—ã–≤–∞–µ–º –ø–∞—Ä—ã –ì—Ä–∞–Ω–∏—Ü–∞-–ì—Ä–∞–Ω–∏—Ü–∞  
 						continue;
 					if (i_p->distance(j_p) <= m_options.smoothingKernelLengthCoefficient * i_p->m_SmR) {
 						//std::cout << j_p->m_id << "\n";
@@ -1247,18 +1166,18 @@ void SPH_CD::creatingVirtualParticles() {
 
 	for (auto*& i : SPH.ParticlePairs) {
 
-		//Œœ–≈ƒ≈À≈Õ»≈ ◊¿—“»÷,  Œ“Œ–€≈ ƒŒÀ∆Õ€ ¡€“‹ Œ“«≈– ¿À≈Õ€, ƒÀﬂ «¿ƒ¿Õ»ﬂ »Ã» √.”.
-		//Œœ–≈ƒ≈À»Ã ”–¿¬Õ≈Õ»≈ œÀŒ— Œ—“», ¬  Œ“Œ–Œ… À≈∆»“ œŒÀ»√ŒÕ, «Õ¿ﬂ “Œ◊ ”, œ–»Õ¿ƒÀ≈∆¿Ÿ”ﬁ ›“Œ… œÀŒ— Œ—“» » ≈® ÕŒ–Ã¿À‹
-		//POS_BOUND - ÚÓ˜Í‡ Ì‡ ÔÎÓÒÍÓÒÚË;
-		//NORMAL - ÌÓÏ‡Î¸ ÔÎÓÒÍÓÒÚË,
-		//“Œ√ƒ¿ ”–-»≈ œÀŒ— Œ—“» »Ã≈≈“ ¬»ƒ
+		//–û–ü–†–ï–î–ï–õ–ï–ù–ò–ï –ß–ê–°–¢–ò–¶, –ö–û–¢–û–†–´–ï –î–û–õ–ñ–ù–´ –ë–´–¢–¨ –û–¢–ó–ï–†–ö–ê–õ–ï–ù–´, –î–õ–Ø –ó–ê–î–ê–ù–ò–Ø –ò–ú–ò –ì.–£.
+		//–û–ü–†–ï–î–ï–õ–ò–ú –£–†–ê–í–ù–ï–ù–ò–ï –ü–õ–û–°–ö–û–°–¢–ò, –í –ö–û–¢–û–†–û–ô –õ–ï–ñ–ò–¢ –ü–û–õ–ò–ì–û–ù, –ó–ù–ê–Ø –¢–û–ß–ö–£, –ü–†–ò–ù–ê–î–õ–ï–ñ–ê–©–£–Æ –≠–¢–û–ô –ü–õ–û–°–ö–û–°–¢–ò –ò –ï–Å –ù–û–†–ú–ê–õ–¨
+		//POS_BOUND - —Ç–æ—á–∫–∞ –Ω–∞ –ø–ª–æ—Å–∫–æ—Å—Ç–∏;
+		//NORMAL - –Ω–æ—Ä–º–∞–ª—å –ø–ª–æ—Å–∫–æ—Å—Ç–∏,
+		//–¢–û–ì–î–ê –£–†-–ò–ï –ü–õ–û–°–ö–û–°–¢–ò –ò–ú–ï–ï–¢ –í–ò–î
 		// NORMAL.X*(X-POS_BOUND.X) + NORMAL.Y*(Y-POS_BOUND.Y) + NORMAL.Z*(Z-POS_BOUND.Z) = 0
-		// POS_REAL - ÚÓ˜Í‡ ˇ‰ÓÏ Ò ÔÎÓÒÍÓÒÚ¸˛
-		//  ¿ÕŒÕ»◊≈— Œ≈ ”–¿¬Õ≈Õ»≈ œ–ﬂÃŒ…,  Œ“Œ–¿ﬂ œ–Œ’Œƒ»“ ◊≈–≈« “Œ◊ ” –ﬂƒŒÃ — œÀŒ— Œ—“‹ﬁ » »Ã≈≈“ Õ¿œ–¿¬ÀﬂﬁŸ»… ¬≈ “Œ– - ÕŒ–Ã¿À‹
+		// POS_REAL - —Ç–æ—á–∫–∞ —Ä—è–¥–æ–º —Å –ø–ª–æ—Å–∫–æ—Å—Ç—å—é
+		// –ö–ê–ù–û–ù–ò–ß–ï–°–ö–û–ï –£–†–ê–í–ù–ï–ù–ò–ï –ü–†–Ø–ú–û–ô, –ö–û–¢–û–†–ê–Ø –ü–†–û–•–û–î–ò–¢ –ß–ï–†–ï–ó –¢–û–ß–ö–£ –†–Ø–î–û–ú –° –ü–õ–û–°–ö–û–°–¢–¨–Æ –ò –ò–ú–ï–ï–¢ –ù–ê–ü–†–ê–í–õ–Ø–Æ–©–ò–ô –í–ï–ö–¢–û–† - –ù–û–†–ú–ê–õ–¨
 		// (X-POS_REAL.X)/NORMAL.X = (Y-POS_REAL.Y)/NORMAL.Y = (Z-POS_REAL.Z)/NORMAL.Z = T
-		// »« –≈«”À‹“¿“¿ œ≈–≈—≈◊≈Õ»ﬂ ›“»’ ”–¿¬Õ≈Õ»… ÃŒ∆ÕŒ Õ¿…“» T:
+		// –ò–ó –†–ï–ó–£–õ–¨–¢–ê–¢–ê –ü–ï–†–ï–°–ï–ß–ï–ù–ò–Ø –≠–¢–ò–• –£–†–ê–í–ù–ï–ù–ò–ô –ú–û–ñ–ù–û –ù–ê–ô–¢–ò T:
 		// T = (NORMAL.X*(POS_BOUND.X-NORMAL.X) + NORMAL.Y*(POS_BOUND.Y-NORMAL.Y) + NORMAL.Z*(POS_BOUND.Z-NORMAL.Z))/(NORMAL.X*POS_REAL.X + NORMAL.Z*POS_REAL.Z + NORMAL.Z*POS_REAL.Z)
-		// ¿ «Õ¿ﬂ T, ”∆≈ ÃŒ∆ÕŒ Œœ–≈ƒ≈À»“‹ œ–Œ≈ ÷»ﬁ “Œ◊ » Õ¿ œÀŒ— Œ—“‹
+		// –ê –ó–ù–ê–Ø T, –£–ñ–ï –ú–û–ñ–ù–û –û–ü–†–ï–î–ï–õ–ò–¢–¨ –ü–†–û–ï–ö–¶–ò–Æ –¢–û–ß–ö–ò –ù–ê –ü–õ–û–°–ö–û–°–¢–¨
 
 		Particle* real_p = SPH.Particles[0];
 		Particle* neighbour_p = SPH.Particles[0];
@@ -1318,16 +1237,14 @@ void SPH_CD::creatingVirtualParticles() {
 				virtualPosition = (projected_real + distanceToPeriodic_part + normal * distance);
 			}
 			else {
-				virtualVelocity = SPH.Particles[neighbour_p->m_id]->m_velocity.val - (SPH.Particles[real_p->m_id]->m_velocity.val - SPH.Particles[neighbour_p->m_id]->m_velocity.val);
+				virtualVelocity = 2.0 * SPH.Particles[neighbour_p->m_id]->m_velocity.val - SPH.Particles[real_p->m_id]->m_velocity.val;
 				virtualPosition = (projected_real - normal * distance);
 			}
 
 			if(virtualPosition != pos_real){
-
 				//std::cout << "virtualVelocity{x,y,z} = {" << virtualVelocity.x << ", " << virtualVelocity.y << ", " << virtualVelocity.z << "}\n";
 				SPH.Particles.push_back(new Particle(m_options.nrOfParticles[PARTICLETYPE::REAL] + m_options.nrOfParticles[PARTICLETYPE::BOUNDARY] + VirtualParticleCount, PARTICLETYPE::VIRTUAL, virtualPosition, virtualVelocity, SPH.Particles[i->Mpart_ptr->m_id]->m_SmR, SPH.Particles[i->Mpart_ptr->m_id]->m_density.val, SPH.Particles[i->Mpart_ptr->m_id]->m_mass));
 				VirtualParticleCount++;
-
 				if (m_options.cornerVP) {
 
 					if (BM.boundarySecBar2(real_p->m_id)) {
@@ -1398,6 +1315,8 @@ void SPH_CD::creatingVirtualParticles() {
 							//std::cout << "From not periodic to periodic\n";
 						}
 						SPH.Particles.push_back(new Particle(m_options.nrOfParticles[PARTICLETYPE::REAL] + m_options.nrOfParticles[PARTICLETYPE::BOUNDARY] + VirtualParticleCount, PARTICLETYPE::VIRTUAL, virtualPosition, virtualVelocity, SPH.Particles[i->Mpart_ptr->m_id]->m_SmR, SPH.Particles[i->Mpart_ptr->m_id]->m_density.val, SPH.Particles[i->Mpart_ptr->m_id]->m_mass));
+						//if((virtualPosition.x > 0.5) and (virtualPosition.y > 0.5))
+						//	std::cout << m_options.nrOfParticles[PARTICLETYPE::REAL] + m_options.nrOfParticles[PARTICLETYPE::BOUNDARY] + VirtualParticleCount << " ";
 						VirtualParticleCount++;
 					}
 				}
@@ -1449,17 +1368,17 @@ void SPH_CD::addingVirtualTOPairs() {
 			}
 		}
 		*/
-		// œ˚Ú‡ÂÏÒˇ ËÁ·ÂÊ‡Ú¸ ÎË¯ÌËı Ô‡
-		for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 ÂÚ.Í. Û ÔÓÒÎÂ‰ÌÂ„Ó ÛÊÂ ÌÂÚÛ ÒÓÒÂ‰ÂÈ
+		// –ü—ã—Ç–∞–µ–º—Å—è –∏–∑–±–µ–∂–∞—Ç—å –ª–∏—à–Ω–∏—Ö –ø–∞—Ä
+		for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 –µ—Ç.–∫. —É –ø–æ—Å–ª–µ–¥–Ω–µ–≥–æ —É–∂–µ –Ω–µ—Ç—É —Å–æ—Å–µ–¥–µ–π
 			Particle* i_p = SPH.Particles[i];
 			//SPH.Particles[i]->VirtualCounterpart = false;
 			//std::cout << i_p->m_id << "_th particle has neighbours: \n";
-			for (int j = i + 1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 ÂÚ.Í. Û ÔÓÒÎÂ‰ÌÂ„Ó ÛÊÂ ÌÂÚÛ ÒÓÒÂ‰ÂÈ
+			for (int j = i + 1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 –µ—Ç.–∫. —É –ø–æ—Å–ª–µ–¥–Ω–µ–≥–æ —É–∂–µ –Ω–µ—Ç—É —Å–æ—Å–µ–¥–µ–π
 				Particle* j_p = SPH.Particles[j];
 				if (i_p == j_p)
 					continue;
 
-				if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) // ÕÂ Û˜ËÚ˚‚‡ÂÏ Ô‡˚ √‡ÌËˆ‡-√‡ÌËˆ‡  
+				if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) // –ù–µ —É—á–∏—Ç—ã–≤–∞–µ–º –ø–∞—Ä—ã –ì—Ä–∞–Ω–∏—Ü–∞-–ì—Ä–∞–Ω–∏—Ü–∞  
 					continue;
 
 
@@ -1480,12 +1399,26 @@ void SPH_CD::addingVirtualTOPairs() {
 
 void SPH_CD::deletingParticlePairs() {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
-		std::cout << "SPH_CD::deletingParticlePairs\n";
+		std::cout << "SPH_CD::deletingParticlePairs   ";
 	}
-	for (auto*& i : SPH.ParticlePairs) {
-		safeDelete(&i);
+	if (SPH.ParticlePairs.size() != 0) {
+		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
+			std::cout << SPH.ParticlePairs.size() << "->";
+		}
+		for (auto*& i : SPH.ParticlePairs) {
+			safeDelete(&i);
+		}
+		SPH.ParticlePairs.resize(0);
+		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
+			std::cout << SPH.ParticlePairs.size() << "\n";
+		}
 	}
-	SPH.ParticlePairs.resize(0);
+	else {
+		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
+			std::cout << "\n";
+		}
+
+	}
 }
 
 
@@ -1520,7 +1453,7 @@ void SPH_CD::DensityVariation() {
 					break;
 				case(DVAL_DT):
 					switch (m_options.densityChangeAlgorithm) {
-					case(0): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
+					case(0): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
 						drhodt[i->Mpart_ptr->m_id] += (i->NBpart_ptr->m_mass) * (-i->dvfunc(Funckey[d])) * (i->dWd(static_cast<DiffAxis>(d), i->Mpart_ptr));
 						drhodt[i->NBpart_ptr->m_id] += (i->Mpart_ptr->m_mass) * (i->dvfunc(Funckey[d])) * (i->dWd(static_cast<DiffAxis>(d), i->NBpart_ptr));
 						break;
@@ -1645,7 +1578,7 @@ void SPH_CD::ExternalForces() {
 	}
 	if (true) { //gravityFlag
 		part_prec_3 gravVec = { 0.0,-9.81, 0.0 };
-		//gravVec = { 0.0f, 0.0f, 0.0f };
+		gravVec = { 0.0f, 0.0f, 0.0f };
 		for (auto*& i : SPH.Particles) {
 			i->m_velocity.dval += gravVec;
 		}
@@ -1729,11 +1662,11 @@ SPH_CD::~SPH_CD() {
 	}
 }
 
-#define COLORING_PARAMETR_NAME "abs(V)"
-#define COLORING_INPUT_PARAMETR(i) sqrt(pow(i->m_velocity.val.x,2)+pow(i->m_velocity.val.y,2)+pow(i->m_velocity.val.z,2))
+//#define COLORING_PARAMETR_NAME "abs(V)"
+//#define COLORING_INPUT_PARAMETR(i) sqrt(pow(i->m_velocity.val.x,2)+pow(i->m_velocity.val.y,2)+pow(i->m_velocity.val.z,2))
 
-//#define COLORING_PARAMETR_NAME "Vx"
-//#define COLORING_INPUT_PARAMETR(i) i->m_velocity.val.x
+#define COLORING_PARAMETR_NAME "Vx"
+#define COLORING_INPUT_PARAMETR(i) i->m_velocity.val.x
 
 //#define COLORING_PARAMETR_NAME "Vy"
 //#define COLORING_INPUT_PARAMETR(i) i->m_velocity.val.y
@@ -1741,10 +1674,10 @@ SPH_CD::~SPH_CD() {
 //#define COLORING_PARAMETR_NAME "Smoothing radius"
 //#define COLORING_INPUT_PARAMETR(i) i->m_SmR
 
-//#define COLORING_PARAMETR_NAME "d(vx)/dt "
+//#define COLORING_PARAMETR_NAME "d(Vx)/dt "
 //#define COLORING_INPUT_PARAMETR(i) i->m_velocity.dval.x
 
-//#define COLORING_PARAMETR_NAME "d(vy)/dt "
+//#define COLORING_PARAMETR_NAME "d(Vy)/dt "
 //#define COLORING_INPUT_PARAMETR(i) i->m_velocity.dval.y
 
 //#define COLORING_PARAMETR_NAME "Density"
@@ -1768,22 +1701,16 @@ SPH_CD::~SPH_CD() {
 
 
 
-//#define COLORING_CONDITION(i) i->m_type == REAL
+#define COLORING_CONDITION(i) i->m_type == REAL
 //#define COLORING_CONDITION(i) i->m_type == VIRTUAL
 //#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == BOUNDARY)or(i->m_type == VIRTUAL)
 //#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == VIRTUAL)
-#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == BOUNDARY)
-
-
-
+//#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == BOUNDARY)
 void SPH_CD::Coloring() {
-
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 		std::cout << "SPH_CD::Coloring\n";
 	}
-	std::cout << ColoringParam << " " ;
 	changeColorParamTo(COLORING_PARAMETR_NAME);
-	std::cout << ColoringParam << "\n";
 	float maxVal = COLORING_INPUT_PARAMETR(SPH.Particles[0]);
 	float minVal = COLORING_INPUT_PARAMETR(SPH.Particles[0]);
 	for (auto*& i : SPH.Particles) {
@@ -1951,20 +1878,20 @@ void SPH_CD::SPH_Iterations() {
 			std::vector<ParticlePair::dsmthFunc> FunckeydX{ &Particle::dx ,&Particle::dy ,&Particle::dz,&Particle::distance };
 
 
-
+			   
 
 			int dim_matrix_size = nrOfDim;
 
 			std::vector<Matrix> FPM_matrix;
-			FPM_matrix.resize(SPH.Particles.size(), Matrix()); // Ì‡ Û‰‡ÎÂÌËÂ
+			FPM_matrix.resize(SPH.Particles.size(), Matrix()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (int i = 0;i < SPH.Particles.size();i++) { FPM_matrix[i].resize(dim_matrix_size, dim_matrix_size); }
 
 			std::vector<std::vector<part_prec>> FPM_vecs;
-			FPM_vecs.resize(SPH.Particles.size(), std::vector<part_prec>()); // Ì‡ Û‰‡ÎÂÌËÂ
+			FPM_vecs.resize(SPH.Particles.size(), std::vector<part_prec>()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (auto &jj : FPM_vecs) { jj.resize(dim_matrix_size, 0.f); }
 
 			std::vector<std::vector<part_prec>> FPM_results;
-			FPM_results.resize(SPH.Particles.size(), std::vector<part_prec>()); // Ì‡ Û‰‡ÎÂÌËÂ
+			FPM_results.resize(SPH.Particles.size(), std::vector<part_prec>()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (auto &jj : FPM_results) { jj.resize(dim_matrix_size, 0.f); }
 
 			std::vector<FiniteParticleMethod> FPM;
@@ -2149,15 +2076,15 @@ void SPH_CD::SPH_Iterations() {
 			std::vector<ParticlePair::dsmthFunc> FunckeydX{ &Particle::dx ,&Particle::dy ,&Particle::dz,&Particle::distance };
 
 			std::vector<Matrix> FPM_matrix;
-			FPM_matrix.resize(SPH.Particles.size(), Matrix()); // Ì‡ Û‰‡ÎÂÌËÂ
+			FPM_matrix.resize(SPH.Particles.size(), Matrix()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (int i = 0;i < SPH.Particles.size();i++) { FPM_matrix[i].resize(m_size, m_size); }
 
 			std::vector<std::vector<part_prec>> FPM_vecs;
-			FPM_vecs.resize(SPH.Particles.size(), std::vector<part_prec>()); // Ì‡ Û‰‡ÎÂÌËÂ
+			FPM_vecs.resize(SPH.Particles.size(), std::vector<part_prec>()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (auto &jj : FPM_vecs) { jj.resize(m_size, 0.f); }
 
 			std::vector<std::vector<part_prec>> FPM_results;
-			FPM_results.resize(SPH.Particles.size(), std::vector<part_prec>()); // Ì‡ Û‰‡ÎÂÌËÂ
+			FPM_results.resize(SPH.Particles.size(), std::vector<part_prec>()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (auto &jj : FPM_results) { jj.resize(m_size, 0.f); }
 
 			std::vector<FiniteParticleMethod> FPM;
@@ -2467,8 +2394,8 @@ void SPH_CD::TimeDerivative() {
 							switch (m_options.velocityChangeAlgorithm_viscosityPart) {
 							case(0): // 0
 								break;
-							case(1): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
-								//  Í‡Í-ÚÓ Á‡ÔËÒ‡Ú¸ ÔÓÒÚÓ ÔÓËÁ‚Ó‰Ì˚Â ‚ÚÓÓ„Ó ÔÓˇ‰Í‡
+							case(1): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
+								//  –∫–∞–∫-—Ç–æ –∑–∞–ø–∏—Å–∞—Ç—å –ø—Ä–æ—Å—Ç–æ –ø—Ä–æ–∏–∑–≤–æ–¥–Ω—ã–µ –≤—Ç–æ—Ä–æ–≥–æ –ø–æ—Ä—è–¥–∫–∞
 								break;
 							case(2):
 								(dvdt)[i->Mpart_ptr->m_id][d] += i->Mpart_ptr->m_DVisc *(i->NBpart_ptr->m_mass) / ((i->Mpart_ptr->m_density.val)*(i->NBpart_ptr->m_density.val)) * 2.f * static_cast<float>(nrOfDim + 2) * (-i->dvfunc(FunckeydV[dd])) * (-i->dvfunc(FunckeydX[dd])) / i->Mpart_ptr->distance(i->NBpart_ptr) * (i->dWd(static_cast<DiffAxis>(dd), i->Mpart_ptr));
@@ -2539,8 +2466,8 @@ void SPH_CD::TimeDerivative() {
 							switch (m_options.velocityChangeAlgorithm_viscosityPart) {
 							case(0): // 0
 								break;
-							case(1): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
-								//  Í‡Í-ÚÓ Á‡ÔËÒ‡Ú¸ ÔÓÒÚÓ ÔÓËÁ‚Ó‰Ì˚Â ‚ÚÓÓ„Ó ÔÓˇ‰Í‡
+							case(1): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
+								//  –∫–∞–∫-—Ç–æ –∑–∞–ø–∏—Å–∞—Ç—å –ø—Ä–æ—Å—Ç–æ –ø—Ä–æ–∏–∑–≤–æ–¥–Ω—ã–µ –≤—Ç–æ—Ä–æ–≥–æ –ø–æ—Ä—è–¥–∫–∞
 								break;
 							case(2):
 								(dvdt)[i->Mpart_ptr->m_id][d] += i->Mpart_ptr->m_DVisc *(i->NBpart_ptr->m_mass) / ((i->Mpart_ptr->m_density.val)*(i->NBpart_ptr->m_density.val)) * 2.f * static_cast<float>(nrOfDim + 2) * (-i->dvfunc(FunckeydV[dd])) * (-i->dvfunc(FunckeydX[dd])) / i->Mpart_ptr->distance(i->NBpart_ptr) * (i->dWd(static_cast<DiffAxis>(dd), i->Mpart_ptr));
@@ -2702,8 +2629,8 @@ void SPH_CD::TimeDerivative() {
 					switch (m_options.velocityChangeAlgorithm_viscosityPart) {
 					case(0): // 0
 						break;
-					case(1): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
-						//  Í‡Í-ÚÓ Á‡ÔËÒ‡Ú¸ ÔÓÒÚÓ ÔÓËÁ‚Ó‰Ì˚Â ‚ÚÓÓ„Ó ÔÓˇ‰Í‡
+					case(1): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
+						//  –∫–∞–∫-—Ç–æ –∑–∞–ø–∏—Å–∞—Ç—å –ø—Ä–æ—Å—Ç–æ –ø—Ä–æ–∏–∑–≤–æ–¥–Ω—ã–µ –≤—Ç–æ—Ä–æ–≥–æ –ø–æ—Ä—è–¥–∫–∞
 						break;
 					case(2):
 						if (i->dvfunc(FunckeydX[d]) != 0) {
@@ -2773,21 +2700,21 @@ void SPH_CD::TimeDerivative() {
 		for (int i = 1;i <= nrOfDim + 1;i++) { m_size += i; }
 
 		std::vector<Matrix> FPM_matrix;
-		FPM_matrix.resize(SPH.Particles.size(), Matrix()); // Ì‡ Û‰‡ÎÂÌËÂ
+		FPM_matrix.resize(SPH.Particles.size(), Matrix()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 		for (int i = 0;i < SPH.Particles.size();i++) { FPM_matrix[i].resize(m_size, m_size); }
 
 		std::vector<std::vector<std::vector<part_prec>>> FPM_vecs;
 		FPM_vecs.resize(nrOfDim + 1); //nrOfParemetersToCalculate
 		for (auto &vec : FPM_vecs) {
-			vec.resize(SPH.Particles.size(), std::vector<part_prec>()); // Ì‡ Û‰‡ÎÂÌËÂ
+			vec.resize(SPH.Particles.size(), std::vector<part_prec>()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (auto &jj : vec) {
-				jj.resize(m_size, 0.f); // Ì‡ Û‰‡ÎÂÌËÂ
+				jj.resize(m_size, 0.f); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			}
 		}
 		std::vector<std::vector<std::vector<part_prec>>> FPM_results;
 		FPM_results.resize(nrOfDim + 1); //nrOfParemetersToCalculate
 		for (auto &res : FPM_results) {
-			res.resize(SPH.Particles.size(), std::vector<part_prec>()); // Ì‡ Û‰‡ÎÂÌËÂ
+			res.resize(SPH.Particles.size(), std::vector<part_prec>()); // –Ω–∞ —É–¥–∞–ª–µ–Ω–∏–µ
 			for (auto &jj : res) {
 				jj.resize(m_size, 0.f);
 			}
@@ -2808,7 +2735,7 @@ void SPH_CD::TimeDerivative() {
 					//if((i->Mpart_ptr->m_id == 430)or(i->NBpart_ptr->m_id == 430)){
 					//	std::cout << FPM_matrix[430](3,0) << " ->" ;
 					//}
-					//  ¿À√Œ–»“Ã€
+					//  –ê–õ–ì–û–†–ò–¢–ú–´
 				PPC_FPMStandart_General(i, &FPM_matrix);
 				//PPC_FPMDifference_General(i, &FPM_matrix);
 				//std::cout << counter++ << " ";
@@ -2934,7 +2861,7 @@ void SPH_CD::TimeDerivative() {
 			}
 
 
-			//◊‡ÒÚËˆ˚ Ì‡ Í‡ˇı Ì‡‰Ó Í‡Í-ÚÓ ÔÓ-ÓÒÓ·ÓÏÛ ÔÓÒ˜ËÚ˚‚‡Ú¸
+			//–ß–∞—Å—Ç–∏—Ü—ã –Ω–∞ –∫—Ä–∞—è—Ö –Ω–∞–¥–æ –∫–∞–∫-—Ç–æ –ø–æ-–æ—Å–æ–±–æ–º—É –ø—Ä–æ—Å—á–∏—Ç—ã–≤–∞—Ç—å
 			/*
 			if (FPM_matrix[i->m_id](0,0) < 1.f) {
 				i->m_density.dval = 0.f;
@@ -3040,7 +2967,7 @@ void SPH_CD::PPC_Density(ParticlePair* pp, std::vector<part_prec>* drhodt) {
 
 
 			switch (m_options.densityChangeAlgorithm) {
-			case(0): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
+			case(0): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
 				(*drhodt)[pp->Mpart_ptr->m_id] += (pp->NBpart_ptr->m_mass) * (-dV[d]) * (pp->dWd(static_cast<DiffAxis>(d), pp->Mpart_ptr));
 				(*drhodt)[pp->NBpart_ptr->m_id] += (pp->Mpart_ptr->m_mass) * (dV[d]) * (pp->dWd(static_cast<DiffAxis>(d), pp->NBpart_ptr));
 				break;
@@ -3074,7 +3001,7 @@ void SPH_CD::PPC_InternalForces(ParticlePair* pp, std::vector<part_prec_3>* dvdt
 	float presspartNB;
 
 	switch (m_options.velocityChangeAlgorithm_pressurePart) {
-	case(0): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
+	case(0): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
 		presspartM = (pp->NBpart_ptr->m_mass) *((pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2)) + (pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2)));
 		presspartNB = (pp->Mpart_ptr->m_mass) *((pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2)) + (pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2)));
 		break;
@@ -3092,7 +3019,7 @@ void SPH_CD::PPC_InternalForces(ParticlePair* pp, std::vector<part_prec_3>* dvdt
 			(PPL_MAIN_PARTICLE_IS(VIRTUAL, pp) or PPL_NEIGHBOUR_PARTICLE_IS(VIRTUAL, pp)) or (PPL_MAIN_PARTICLE_IS(BOUNDARY, pp) or PPL_NEIGHBOUR_PARTICLE_IS(BOUNDARY, pp))) {
 
 			switch (m_options.velocityChangeAlgorithm_pressurePart) {
-			case(0): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
+			case(0): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
 				(*dvdt)[pp->Mpart_ptr->m_id][d] += presspartM * (pp->dWd(static_cast<DiffAxis>(d), pp->Mpart_ptr));
 				(*dvdt)[pp->NBpart_ptr->m_id][d] += presspartNB * (pp->dWd(static_cast<DiffAxis>(d), pp->NBpart_ptr));
 				break;
@@ -3112,7 +3039,7 @@ void SPH_CD::PPC_InternalForces(ParticlePair* pp, std::vector<part_prec_3>* dvdt
 			for (int dd = 0;dd < nrOfDim;dd++) {
 
 				switch (m_options.velocityChangeAlgorithm_viscosityPart) {
-				case(0): //ÏÓÈ ‚˚‚Ó‰ (Í‡Í ˇ ÔÓÌËÏ‡˛)
+				case(0): //–º–æ–π –≤—ã–≤–æ–¥ (–∫–∞–∫ —è –ø–æ–Ω–∏–º–∞—é)
 					//(*dvdt)[pp->Mpart_ptr->m_id][d] += -pp->NBpart_ptr->m_mass * ((Tau[pp->Mpart_ptr->m_id][d][dd] / pow(pp->Mpart_ptr->m_density.val, 2)) + (Tau[pp->NBpart_ptr->m_id][d][dd] / pow(pp->NBpart_ptr->m_density.val, 2))) * (pp->dWd(static_cast<DiffAxis>(dd), pp->Mpart_ptr));
 					//(*dvdt)[pp->NBpart_ptr->m_id][d] += -pp->Mpart_ptr->m_mass * ((Tau[pp->Mpart_ptr->m_id][d][dd] / pow(pp->Mpart_ptr->m_density.val, 2)) + (Tau[pp->NBpart_ptr->m_id][d][dd] / pow(pp->NBpart_ptr->m_density.val, 2))) * (pp->dWd(static_cast<DiffAxis>(dd), pp->NBpart_ptr));
 					break;
@@ -3176,7 +3103,6 @@ void SPH_CD::PPC_DVx_FPM(ParticlePair* pp, std::vector<FiniteParticleMethod>* FP
 
 }
 */
-
 void SPH_CD::PPC_FPMStandart_General(ParticlePair* pp, std::vector<Matrix>* FPM_matrix) {
 
 
@@ -3234,7 +3160,7 @@ void SPH_CD::PPC_FPMStandart_General(ParticlePair* pp, std::vector<Matrix>* FPM_
 	float derivativeNB;
 
 	for (int r = 1;r < m_size;r++) {
-		//ŒÔÂ‰ÂÎˇÂÏ ÔÓˇ‰ÓÍ ÔÓËÁ‚Ó‰ÌÓÈ
+		//–û–ø—Ä–µ–¥–µ–ª—è–µ–º –ø–æ—Ä—è–¥–æ–∫ –ø—Ä–æ–∏–∑–≤–æ–¥–Ω–æ–π
 		switch (nrOfDim) {
 		case(1):
 			switch (r) {
@@ -3416,7 +3342,6 @@ void SPH_CD::PPC_FPMStandart_General(ParticlePair* pp, std::vector<Matrix>* FPM_
 
 
 }
-
 void SPH_CD::PPC_FPMStandart_vec(ParticlePair* pp, std::vector<std::vector<part_prec>>* FPM_vec,std::string param) {
 
 
@@ -3484,8 +3409,6 @@ void SPH_CD::PPC_FPMStandart_vec(ParticlePair* pp, std::vector<std::vector<part_
 		(*FPM_vec)[pp->NBpart_ptr->m_id][i] += vecNB[i];
 	}
 }
-
-
 void SPH_CD::PPC_FPMDifference_General(ParticlePair* pp, std::vector<Matrix>* FPM_matrix) {
 
 
@@ -3541,7 +3464,7 @@ void SPH_CD::PPC_FPMDifference_General(ParticlePair* pp, std::vector<Matrix>* FP
 	float derivativeNB;
 
 	for (int r = 1;r < m_size;r++) {
-		//ŒÔÂ‰ÂÎˇÂÏ ÔÓˇ‰ÓÍ ÔÓËÁ‚Ó‰ÌÓÈ
+		//–û–ø—Ä–µ–¥–µ–ª—è–µ–º –ø–æ—Ä—è–¥–æ–∫ –ø—Ä–æ–∏–∑–≤–æ–¥–Ω–æ–π
 		switch (nrOfDim) {
 		case(1):
 			switch (r) {
@@ -3729,7 +3652,6 @@ void SPH_CD::PPC_FPMDifference_General(ParticlePair* pp, std::vector<Matrix>* FP
 
 
 }
-
 void SPH_CD::PPC_FPMDifference_vec(ParticlePair* pp, std::vector<std::vector<part_prec>>* FPM_vec, std::string param) {
 
 
@@ -3801,7 +3723,6 @@ void SPH_CD::PPC_FPMDifference_vec(ParticlePair* pp, std::vector<std::vector<par
 
 
 }
-
 void SPH_CD::PPC_CorSPH_General(ParticlePair* pp, std::vector<Matrix>* FPM_matrix) {
 	int m_size = (*FPM_matrix)[0].getRows();
 	Matrix matM;                    Matrix matNB;
@@ -3823,7 +3744,6 @@ void SPH_CD::PPC_CorSPH_General(ParticlePair* pp, std::vector<Matrix>* FPM_matri
 	(*FPM_matrix)[pp->Mpart_ptr->m_id] += matM;
 	(*FPM_matrix)[pp->NBpart_ptr->m_id] += matNB;
 }
-
 void SPH_CD::PPC_CorSPH_vec(ParticlePair* pp, std::vector<std::vector<part_prec>>* FPM_vec, std::string param) {
 	part_prec MpParam;
 	part_prec NBpParam;
@@ -3847,6 +3767,8 @@ void SPH_CD::PPC_CorSPH_vec(ParticlePair* pp, std::vector<std::vector<part_prec>
 }
 
 
+
+
 void SPH_CD::RenormFactorCalc(std::vector<part_prec>* gamma, ParticlePair * pp) {
 	(*gamma)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass / pp->NBpart_ptr->m_density.val * pp->W(pp->Mpart_ptr);
 	(*gamma)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass / pp->Mpart_ptr->m_density.val *pp->W(pp->NBpart_ptr);
@@ -3863,36 +3785,64 @@ void SPH_CD::RenormFactorDerivCalc(std::vector<part_prec_3>* gamma_deriv, Partic
 
 
 void SPH_CD::DensityCalculation(std::vector<part_prec>* drhodt, ParticlePair * pp) {
-	switch (m_options.densityChangeUsing) {
-	case(VAL):
+
+	switch (m_options.densityChangeAlgorithm) {
+	case(0):
 		// k=0
-		//(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * pp->Mpart_ptr->m_density.val / pp->NBpart_ptr->m_density.val * pp->W(pp->Mpart_ptr);
-		//(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * pp->NBpart_ptr->m_density.val / pp->Mpart_ptr->m_density.val *pp->W(pp->NBpart_ptr);
-		// k=1
-		//(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * pp->W(pp->Mpart_ptr);
-		//(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * pp->W(pp->NBpart_ptr);
-		// k=2
-		(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * pp->NBpart_ptr->m_density.val/ pp->Mpart_ptr->m_density.val * pp->W(pp->Mpart_ptr);
-		(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * pp->Mpart_ptr->m_density.val / pp->NBpart_ptr->m_density.val *pp->W(pp->NBpart_ptr);
+		switch (m_options.densityChangeUsing) {
+		case(VAL):
+			(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * pp->Mpart_ptr->m_density.val / pp->NBpart_ptr->m_density.val * pp->W(pp->Mpart_ptr);
+			(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * pp->NBpart_ptr->m_density.val / pp->Mpart_ptr->m_density.val *pp->W(pp->NBpart_ptr);
+			break;
+		case(DVAL_DT):
+			(*drhodt)[pp->Mpart_ptr->m_id] += pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_mass / pp->NBpart_ptr->m_density.val*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
+			(*drhodt)[pp->NBpart_ptr->m_id] += pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_mass / pp->Mpart_ptr->m_density.val*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+			break;
+		default:
+			break;
+		}
 		break;
-	case(DVAL_DT):
-		// k=0
-		//(*drhodt)[pp->Mpart_ptr->m_id] += pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_mass / pp->NBpart_ptr->m_density.val*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
-		//(*drhodt)[pp->NBpart_ptr->m_id] += pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_mass / pp->Mpart_ptr->m_density.val*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+	case(1):
 		// k=1
-		(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
-		(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+		switch (m_options.densityChangeUsing) {
+		case(VAL):
+			(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * pp->W(pp->Mpart_ptr);
+			(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * pp->W(pp->NBpart_ptr);
+			break;
+		case(DVAL_DT):
+			(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
+			(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+			break;
+		default:
+			break;
+		}
+		break;
+	case(2):
 		// k=2
-		//(*drhodt)[pp->Mpart_ptr->m_id] += pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_mass / pp->NBpart_ptr->m_density.val*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
-		//(*drhodt)[pp->NBpart_ptr->m_id] += pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_mass / pp->Mpart_ptr->m_density.val*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+		switch (m_options.densityChangeUsing) {
+		case(VAL):
+			(*drhodt)[pp->Mpart_ptr->m_id] += pp->NBpart_ptr->m_mass * pp->NBpart_ptr->m_density.val / pp->Mpart_ptr->m_density.val * pp->W(pp->Mpart_ptr);
+			(*drhodt)[pp->NBpart_ptr->m_id] += pp->Mpart_ptr->m_mass * pp->Mpart_ptr->m_density.val / pp->NBpart_ptr->m_density.val *pp->W(pp->NBpart_ptr);
+			break;
+		case(DVAL_DT):
+			(*drhodt)[pp->Mpart_ptr->m_id] += pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_mass / pp->NBpart_ptr->m_density.val*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
+			(*drhodt)[pp->NBpart_ptr->m_id] += pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_mass / pp->Mpart_ptr->m_density.val*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
 		break;
 	}
 
 	//if ((pp->Mpart_ptr->m_id == m_options.nrOfParticles[PARTICLETYPE::REAL] - 1) and (pp->NBpart_ptr->m_mass * glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr) != 0)) {
-	//	std::cout << "("<< pp->NBpart_ptr->m_id << ")" << glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr)) <<" + ";
+	//	//std::cout << "(" << pp->NBpart_ptr->m_id << ")(" << pp->NBpart_ptr->m_mass << "*" << glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr)) << "*" << pp->dWd(R, pp->Mpart_ptr) << ")+ ";
+	//	std::cout << "(" << pp->NBpart_ptr->m_id << ")(" << pp->NBpart_ptr->m_mass * glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr)) * pp->dWd(R, pp->Mpart_ptr) << ")\n";
 	//}
 	//if ((pp->NBpart_ptr->m_id == m_options.nrOfParticles[PARTICLETYPE::REAL] - 1) and (pp->Mpart_ptr->m_mass * glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr) != 0)) {
-	//	std::cout << "(" << pp->Mpart_ptr->m_id << ")" << glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))<< " + ";
+	//	//std::cout << "(" << pp->Mpart_ptr->m_id << ")(" << pp->Mpart_ptr->m_mass << "*" << glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr)) << "*" << pp->dWd(R, pp->NBpart_ptr) << ")+ ";
+	//	std::cout << "(" << pp->Mpart_ptr->m_id << ")(" << pp->Mpart_ptr->m_mass * glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr)) * pp->dWd(R, pp->NBpart_ptr) << ")\n";
 	//}
 	//if (pp->NBpart_ptr->m_mass * glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr) != 0) {
 	//	std::cout << pp->NBpart_ptr->m_mass * glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->dWd(R, pp->Mpart_ptr) << " = "<< pp->Mpart_ptr->m_mass * glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->dWd(R, pp->NBpart_ptr) <<"\n";
@@ -3900,49 +3850,98 @@ void SPH_CD::DensityCalculation(std::vector<part_prec>* drhodt, ParticlePair * p
 
 }
 
+void SPH_CD::DensityDiffusiveTerm(std::vector<part_prec>* drhodt, ParticlePair * pp) {
+	(*drhodt)[pp->Mpart_ptr->m_id] += dot((2.0*(pp->Mpart_ptr->m_density.val - pp->NBpart_ptr->m_density.val) / pp->Mpart_ptr->distance(pp->NBpart_ptr)*pp->vec_e(pp->Mpart_ptr)),(pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr)))*(pp->NBpart_ptr->m_mass)/(pp->NBpart_ptr->m_density.val);
+	(*drhodt)[pp->NBpart_ptr->m_id] += dot((2.0*(pp->NBpart_ptr->m_density.val - pp->Mpart_ptr->m_density.val) / pp->NBpart_ptr->distance(pp->Mpart_ptr)*pp->vec_e(pp->NBpart_ptr)), (pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr)))*(pp->Mpart_ptr->m_mass) / (pp->Mpart_ptr->m_density.val);
+}
+
+
 void SPH_CD::PressurePartCalculation(std::vector<part_prec_3>* dvdt, ParticlePair * pp) {
-	// k=0
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)/(pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val)*(pp->Mpart_ptr->m_pressure.val + pp->NBpart_ptr->m_pressure.val )*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass) / (pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val)*(pp->NBpart_ptr->m_pressure.val + pp->Mpart_ptr->m_pressure.val)*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-	// k=1
-	(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) + pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) + pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-	// k=2
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3) + pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	//(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3) + pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-	
+	switch (m_options.velocityChangeAlgorithm_pressurePart){
+	case(0):
+		// k=0
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass) / (pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val)*(pp->Mpart_ptr->m_pressure.val + pp->NBpart_ptr->m_pressure.val)*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass) / (pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val)*(pp->NBpart_ptr->m_pressure.val + pp->Mpart_ptr->m_pressure.val)*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	case(1):
+		// k=1
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) + pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) + pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	case(2):
+		// k=2
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3) + pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3) + pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	default:
+		break;
+	}	
 	//if (((-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3) + pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr)).x != 0)
 	//	std::cout << ((-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3) + pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr)).x << "   " << ((-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3) + pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr)).x << "\n";
+
+	//if ((pp->Mpart_ptr->m_id == m_options.nrOfParticles[PARTICLETYPE::REAL] - 1) and ((-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) + pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr)).x != 0) {
+	//	std::cout << "(" << pp->NBpart_ptr->m_id << ")(" << (-pp->NBpart_ptr->m_mass) << "*("<< pp->Mpart_ptr->m_pressure.val<<"/" << pow(pp->Mpart_ptr->m_density.val, 2) << "+" << pp->NBpart_ptr->m_pressure.val << "/" << pow(pp->NBpart_ptr->m_density.val, 2) <<")*" << pp->dWd(R, pp->Mpart_ptr) <<"*"<< pp->vec_e(pp->Mpart_ptr).x << "="<<(-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) + pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2))*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr).x << ")+ ";
+	//	//std::cout << "(" << pp->NBpart_ptr->m_id << ")(" << (*dvdt)[pp->Mpart_ptr->m_id].x << ")+";
+	//}
+	//if ((pp->NBpart_ptr->m_id == m_options.nrOfParticles[PARTICLETYPE::REAL] - 1) and ((-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) + pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr)).x != 0) {
+	//	std::cout << "(" << pp->Mpart_ptr->m_id << ")(" << (-pp->Mpart_ptr->m_mass) << "*(" << pp->NBpart_ptr->m_pressure.val << "/" << pow(pp->NBpart_ptr->m_density.val, 2) << "+" << pp->Mpart_ptr->m_pressure.val << "/" << pow(pp->Mpart_ptr->m_density.val, 2) << ")*" << pp->dWd(R, pp->NBpart_ptr) << "*" << pp->vec_e(pp->NBpart_ptr).x << "=" << ((-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) + pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2))*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr)).x << ")+ ";
+	//	//std::cout << "(" << pp->Mpart_ptr->m_id << ")(" << (*dvdt)[pp->NBpart_ptr->m_id].x << ")+";
+	//}
 }
 
 void SPH_CD::ViscosityPartCalculation(std::vector<part_prec_3>* dvdt, ParticlePair * pp) {
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (2.0*pp->Mpart_ptr->m_DVisc)*pp->Mpart_ptr->dV(pp->NBpart_ptr) / (pp->getDist())*pp->dWd(R, pp->Mpart_ptr);
-	//(*dvdt)[pp->NBpart_ptr->m_id] += (2.0*pp->NBpart_ptr->m_DVisc)*pp->Mpart_ptr->dV(pp->Mpart_ptr) / (pp->getDist())*pp->dWd(R, pp->NBpart_ptr);
-	//
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (2.0*pp->Mpart_ptr->m_DVisc)*static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr)) / (pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	//(*dvdt)[pp->NBpart_ptr->m_id] += (2.0*pp->NBpart_ptr->m_DVisc)*static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr)) / (pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-	//
-	(*dvdt)[pp->Mpart_ptr->m_id] += ((pp->Mpart_ptr->m_DVisc + pp->NBpart_ptr->m_DVisc))/(2.0*pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->vec_e(pp->Mpart_ptr) + pp->Mpart_ptr->dV(pp->NBpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
-	(*dvdt)[pp->NBpart_ptr->m_id] += ((pp->NBpart_ptr->m_DVisc + pp->Mpart_ptr->m_DVisc)) / (2.0*pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->vec_e(pp->NBpart_ptr) + pp->NBpart_ptr->dV(pp->Mpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
-
+	switch (m_options.velocityChangeAlgorithm_viscosityPart) {
+	case(0):
+		(*dvdt)[pp->Mpart_ptr->m_id] += (2.0*pp->Mpart_ptr->m_DVisc)*pp->Mpart_ptr->dV(pp->NBpart_ptr) / (pp->getDist())*pp->dWd(R, pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += (2.0*pp->NBpart_ptr->m_DVisc)*pp->Mpart_ptr->dV(pp->Mpart_ptr) / (pp->getDist())*pp->dWd(R, pp->NBpart_ptr);
+		break;
+	case(1):
+		(*dvdt)[pp->Mpart_ptr->m_id] += (2.0*pp->Mpart_ptr->m_DVisc)*static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr)) / (pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += (2.0*pp->NBpart_ptr->m_DVisc)*static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr)) / (pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	case(2):
+		(*dvdt)[pp->Mpart_ptr->m_id] += ((pp->Mpart_ptr->m_DVisc + pp->NBpart_ptr->m_DVisc)) / (2.0*pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->vec_e(pp->Mpart_ptr) + pp->Mpart_ptr->dV(pp->NBpart_ptr))*pp->dWd(R, pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += ((pp->NBpart_ptr->m_DVisc + pp->Mpart_ptr->m_DVisc)) / (2.0*pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->vec_e(pp->NBpart_ptr) + pp->NBpart_ptr->dV(pp->Mpart_ptr))*pp->dWd(R, pp->NBpart_ptr);
+		break;			
+	default:
+		break;
+	}
 
 	//if (((-(pp->Mpart_ptr->m_DVisc + pp->NBpart_ptr->m_DVisc)) / (2.0*pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->vec_e(pp->Mpart_ptr) + pp->Mpart_ptr->dV(pp->NBpart_ptr))*pp->dWd(R, pp->Mpart_ptr)).x != 0)
 	//	std::cout << ((-(pp->Mpart_ptr->m_DVisc + pp->NBpart_ptr->m_DVisc)) / (2.0*pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->vec_e(pp->Mpart_ptr) + pp->Mpart_ptr->dV(pp->NBpart_ptr))*pp->dWd(R, pp->Mpart_ptr)).x << "   " << ((-(pp->NBpart_ptr->m_DVisc + pp->Mpart_ptr->m_DVisc)) / (2.0*pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->vec_e(pp->NBpart_ptr) + pp->NBpart_ptr->dV(pp->Mpart_ptr))*pp->dWd(R, pp->NBpart_ptr)).x << "\n\n";
+
+
+	//if ((pp->Mpart_ptr->m_id == m_options.nrOfParticles[PARTICLETYPE::REAL] - 1) and ((((pp->Mpart_ptr->m_DVisc + pp->NBpart_ptr->m_DVisc)) / (2.0*pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->vec_e(pp->Mpart_ptr) + pp->Mpart_ptr->dV(pp->NBpart_ptr))*pp->dWd(R, pp->Mpart_ptr)).x != 0)) {
+	//	//std::cout << "(" << pp->NBpart_ptr->m_id << ")(" << (((pp->Mpart_ptr->m_DVisc + pp->NBpart_ptr->m_DVisc)) / (2.0*pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->Mpart_ptr->dV(pp->NBpart_ptr), pp->vec_e(pp->Mpart_ptr))*pp->vec_e(pp->Mpart_ptr) + pp->Mpart_ptr->dV(pp->NBpart_ptr))*pp->dWd(R, pp->Mpart_ptr)).x << ")+ ";
+	//	std::cout << "(" << pp->NBpart_ptr->m_id << ")(" << (*dvdt)[pp->Mpart_ptr->m_id].x << ")+";
+	//}
+	//if ((pp->NBpart_ptr->m_id == m_options.nrOfParticles[PARTICLETYPE::REAL] - 1) and ((((pp->NBpart_ptr->m_DVisc + pp->Mpart_ptr->m_DVisc)) / (2.0*pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->vec_e(pp->NBpart_ptr) + pp->NBpart_ptr->dV(pp->Mpart_ptr))*pp->dWd(R, pp->NBpart_ptr)).x != 0)) {
+	//	//std::cout << "(" << pp->Mpart_ptr->m_id << ")(" << (((pp->NBpart_ptr->m_DVisc + pp->Mpart_ptr->m_DVisc)) / (2.0*pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val*pp->getDist())*(static_cast<part_prec>(nrOfDim + 2)*glm::dot(pp->NBpart_ptr->dV(pp->Mpart_ptr), pp->vec_e(pp->NBpart_ptr))*pp->vec_e(pp->NBpart_ptr) + pp->NBpart_ptr->dV(pp->Mpart_ptr))*pp->dWd(R, pp->NBpart_ptr)).x << ")+ ";
+	//	std::cout << "(" << pp->Mpart_ptr->m_id << ")(" << (*dvdt)[pp->NBpart_ptr->m_id].x << ")+";
+	//}
 }
 
-
-
 void SPH_CD::RenormPressurePartCalculation(std::vector<part_prec_3>* dvdt, ParticlePair * pp, std::vector<part_prec>* gamma) {
-	// k=0
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)/(pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val)*(pp->Mpart_ptr->m_pressure.val/ (*gamma)[pp->Mpart_ptr->m_id] + pp->NBpart_ptr->m_pressure.val/(*gamma)[pp->NBpart_ptr->m_id] )*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass) / (pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val)*(pp->NBpart_ptr->m_pressure.val/(*gamma)[pp->NBpart_ptr->m_id] + pp->Mpart_ptr->m_pressure.val/ (*gamma)[pp->Mpart_ptr->m_id])*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-	// k=1
-	(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) / (*gamma)[pp->Mpart_ptr->m_id] + pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) / (*gamma)[pp->NBpart_ptr->m_id])*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) / (*gamma)[pp->NBpart_ptr->m_id] + pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) / (*gamma)[pp->Mpart_ptr->m_id])*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-	// k=2
-	//(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3)/ (*gamma)[pp->Mpart_ptr->m_id] + pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3)/ (*gamma)[pp->NBpart_ptr->m_id])*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
-	//(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3)/ (*gamma)[pp->NBpart_ptr->m_id] + pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3)/ (*gamma)[pp->Mpart_ptr->m_id])*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
-
+	switch (m_options.velocityChangeAlgorithm_pressurePart) {
+	case(0):
+		// k=0
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass) / (pp->Mpart_ptr->m_density.val*pp->NBpart_ptr->m_density.val)*(pp->Mpart_ptr->m_pressure.val / (*gamma)[pp->Mpart_ptr->m_id] + pp->NBpart_ptr->m_pressure.val / (*gamma)[pp->NBpart_ptr->m_id])*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass) / (pp->NBpart_ptr->m_density.val*pp->Mpart_ptr->m_density.val)*(pp->NBpart_ptr->m_pressure.val / (*gamma)[pp->NBpart_ptr->m_id] + pp->Mpart_ptr->m_pressure.val / (*gamma)[pp->Mpart_ptr->m_id])*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	case(1):
+		// k=1
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) / (*gamma)[pp->Mpart_ptr->m_id] + pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) / (*gamma)[pp->NBpart_ptr->m_id])*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val / pow(pp->NBpart_ptr->m_density.val, 2) / (*gamma)[pp->NBpart_ptr->m_id] + pp->Mpart_ptr->m_pressure.val / pow(pp->Mpart_ptr->m_density.val, 2) / (*gamma)[pp->Mpart_ptr->m_id])*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	case(2):
+		// k=2
+		(*dvdt)[pp->Mpart_ptr->m_id] += (-pp->NBpart_ptr->m_mass)*(pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3) / (*gamma)[pp->Mpart_ptr->m_id] + pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3) / (*gamma)[pp->NBpart_ptr->m_id])*pp->dWd(R, pp->Mpart_ptr) * pp->vec_e(pp->Mpart_ptr);
+		(*dvdt)[pp->NBpart_ptr->m_id] += (-pp->Mpart_ptr->m_mass)*(pp->NBpart_ptr->m_pressure.val*pp->Mpart_ptr->m_density.val / pow(pp->NBpart_ptr->m_density.val, 3) / (*gamma)[pp->NBpart_ptr->m_id] + pp->Mpart_ptr->m_pressure.val*pp->NBpart_ptr->m_density.val / pow(pp->Mpart_ptr->m_density.val, 3) / (*gamma)[pp->Mpart_ptr->m_id])*pp->dWd(R, pp->NBpart_ptr) * pp->vec_e(pp->NBpart_ptr);
+		break;
+	default:
+		break;
+	}
+	
 }
 
 
@@ -3955,9 +3954,11 @@ void SPH_CD::DensityRecalculation() {
 	gamma_deriv.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
 	if (m_options.boundary_handling == RENORMALIZATION) {
 		for (auto* i : SPH.ParticlePairs) {
+			if (PPL_BOTH_PARTICLES_ARE(REAL, i)) {
 				DensityCalculation(&drhodt, i);
 				RenormFactorCalc(&gamma, i);
 				RenormFactorDerivCalc(&gamma_deriv, i);
+			}
 		}
 		for (auto*& i : SPH.Particles) {
 			//std::cout << drhodt[i->m_id] << "   " << gamma[i->m_id] <<"   "<< i->m_density.val << "   " << dot(gamma_deriv[i->m_id], i->m_velocity.val)  << "\n";
@@ -3979,8 +3980,10 @@ void SPH_CD::DensityRecalculation() {
 }
 
 void SPH_CD::VelocityRecalculation() {
-	std::vector<part_prec_3> dvdt;
-	dvdt.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
+	std::vector<part_prec_3> dvdt_press;
+	dvdt_press.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
+	std::vector<part_prec_3> dvdt_dvisc;
+	dvdt_dvisc.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
 	if (m_options.boundary_handling == RENORMALIZATION) {
 		std::vector<part_prec> gamma;
 		gamma.resize(SPH.Particles.size(), 0.f);
@@ -3994,14 +3997,14 @@ void SPH_CD::VelocityRecalculation() {
 		}
 		for (auto* i : SPH.ParticlePairs) {
 			if (PPL_BOTH_PARTICLES_ARE(REAL, i)) {
-				RenormPressurePartCalculation(&dvdt, i, &gamma);
-				ViscosityPartCalculation(&dvdt, i);
+				RenormPressurePartCalculation(&dvdt_press, i, &gamma);
+				ViscosityPartCalculation(&dvdt_dvisc, i);
 			}
 		}
 		for (auto*& i : SPH.Particles) {
 			if(i->m_type == REAL){
 				//std::cout << (dvdt)[i->m_id].x << ", " << (dvdt)[i->m_id].y <<"   "<< (gamma)[i->m_id] << "   " <<(gamma_deriv)[i->m_id].x << ", " << (gamma_deriv)[i->m_id].y << "\n";
-				i->m_velocity.dval = (dvdt)[i->m_id] + i->m_pressure.val/i->m_density.val*(gamma_deriv)[i->m_id] / (gamma)[i->m_id];
+				i->m_velocity.dval = (dvdt_dvisc)[i->m_id] + (dvdt_press)[i->m_id] + i->m_pressure.val/i->m_density.val*(gamma_deriv)[i->m_id] / (gamma)[i->m_id];
 			}
 		}
 
@@ -4009,67 +4012,107 @@ void SPH_CD::VelocityRecalculation() {
 	else{
 		for (auto* i : SPH.ParticlePairs) {
 			if ((PPL_BOTH_PARTICLES_ARE(REAL, i)) or (PPL_MAIN_PARTICLE_IS(VIRTUAL, i) or PPL_NEIGHBOUR_PARTICLE_IS(VIRTUAL, i))) {
-				PressurePartCalculation(&dvdt, i);
+				PressurePartCalculation(&dvdt_press, i);
 			}
 			if ((PPL_BOTH_PARTICLES_ARE(REAL, i)) or (PPL_MAIN_PARTICLE_IS(VIRTUAL, i) or PPL_NEIGHBOUR_PARTICLE_IS(VIRTUAL, i))) {
-				ViscosityPartCalculation(&dvdt, i);
+				ViscosityPartCalculation(&dvdt_dvisc, i);
 			}
 		}
 		for (auto*& i : SPH.Particles) { 
-			i->m_velocity.dval = (dvdt)[i->m_id];
+			i->m_velocity.dval = (dvdt_dvisc)[i->m_id] + (dvdt_press)[i->m_id];
 		}
 	}
 }
+
 void SPH_CD::DensityAndVelocityRecalculation(){
 	std::vector<part_prec> drhodt;
 	drhodt.resize(SPH.Particles.size(), 0.f);
-	std::vector<part_prec_3> dvdt;
-	dvdt.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
+	std::vector<part_prec_3> dvdt_press;
+	dvdt_press.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
+	std::vector<part_prec_3> dvdt_dvisc;
+	dvdt_dvisc.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
+	std::vector<part_prec> gamma;
+	std::vector<part_prec_3> gamma_deriv;
+	std::vector<part_prec> dens_diff;
 	//std::cout << " = " << drhodt[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1] <<" "<< SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1]->m_density.dval<< "\n";
 
+	double ksi = 0.2;
+	if (m_options.Density_Diffusion_term) {
+		dens_diff.resize(SPH.Particles.size(), 0.f);
+	}
+
 	if (m_options.boundary_handling == RENORMALIZATION) {
-		std::vector<part_prec> gamma;
 		gamma.resize(SPH.Particles.size(), 0.f);
-		std::vector<part_prec_3> gamma_deriv;
 		gamma_deriv.resize(SPH.Particles.size(), { 0.0,0.0,0.0 });
+		std::cout << "Renormalization\n";
 		for (auto* i : SPH.ParticlePairs) {
 			if (PPL_BOTH_PARTICLES_ARE(REAL, i)) {
 				DensityCalculation(&drhodt, i);
 				RenormFactorCalc(&gamma, i);
 				RenormFactorDerivCalc(&gamma_deriv, i);
+				if (m_options.Density_Diffusion_term) {
+					DensityDiffusiveTerm(&dens_diff, i);
+				}
 			}
 		}
 		for (auto* i : SPH.ParticlePairs) {
 			if (PPL_BOTH_PARTICLES_ARE(REAL, i)) {
-				RenormPressurePartCalculation(&dvdt, i, &gamma);
-				ViscosityPartCalculation(&dvdt, i);
+				RenormPressurePartCalculation(&dvdt_press, i, &gamma);
+				ViscosityPartCalculation(&dvdt_dvisc, i);
 			}
 		}
 		for (auto*& i : SPH.Particles) {
 			i->m_density.dval = drhodt[i->m_id] / gamma[i->m_id] - (i->m_density.val* dot(gamma_deriv[i->m_id], i->m_velocity.val)) / gamma[i->m_id];
-			i->m_velocity.dval = (dvdt)[i->m_id] + i->m_pressure.val / i->m_density.val*(gamma_deriv)[i->m_id] / (gamma)[i->m_id];
+			if (m_options.Density_Diffusion_term) {	i->m_density.dval += dens_diff[i->m_id]; }
+			i->m_velocity.dval = (dvdt_dvisc)[i->m_id] + (dvdt_press)[i->m_id] + i->m_pressure.val / i->m_density.val*(gamma_deriv)[i->m_id] / (gamma)[i->m_id];
 		}
 	}
 	else {
+		//std::vector<part_prec> gamma;
+		//gamma.resize(SPH.Particles.size(), 0.f);
+		//std::cout << drhodt[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1] << " === " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1]->m_density.dval << " -> ";
+		//std::cout << dvdt[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1].x << " === " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1]->m_velocity.dval.x << " -> ";
+
+		gamma.resize(SPH.Particles.size(), 0.f);
 		for (auto* i : SPH.ParticlePairs) {
 			if ((PPL_BOTH_PARTICLES_ARE(REAL, i)) or (PPL_MAIN_PARTICLE_IS(VIRTUAL, i) or PPL_NEIGHBOUR_PARTICLE_IS(VIRTUAL, i))) {
 				DensityCalculation(&drhodt, i);
+				RenormFactorCalc(&gamma, i);
+				if (m_options.Density_Diffusion_term) {
+					DensityDiffusiveTerm(&dens_diff, i);
+				}
 			}
 			if ((PPL_BOTH_PARTICLES_ARE(REAL, i)) or (PPL_MAIN_PARTICLE_IS(VIRTUAL, i) or PPL_NEIGHBOUR_PARTICLE_IS(VIRTUAL, i))) {
-				PressurePartCalculation(&dvdt, i);
+				PressurePartCalculation(&dvdt_press, i);
 			}
 			if ((PPL_BOTH_PARTICLES_ARE(REAL, i)) or (PPL_MAIN_PARTICLE_IS(VIRTUAL, i) or PPL_NEIGHBOUR_PARTICLE_IS(VIRTUAL, i))) {
-				ViscosityPartCalculation(&dvdt, i);
+				ViscosityPartCalculation(&dvdt_dvisc, i);
 			}
 
 		}
 		for (auto*& i : SPH.Particles) {
-			i->m_density.dval = drhodt[i->m_id];
-			i->m_velocity.dval = (dvdt)[i->m_id];
+			//if(i->m_type == REAL)   std::cout << gamma[i->m_id] << "\n";
+			if (i->m_type == REAL) {
+				i->m_density.dval = drhodt[i->m_id]/ gamma[i->m_id];
+				if (m_options.Density_Diffusion_term) { i->m_density.dval += dens_diff[i->m_id]; }
+				i->m_velocity.dval = (dvdt_dvisc)[i->m_id] + (dvdt_press)[i->m_id];
+			}
 		}
+	}
 
+
+
+	std::cout << "id" << " " << "\t  drho" << " " << "\t  dv_visc.x" << ", " << "\t  dv_visc.y" << " " << "\t  dv_press.y" << ", " << "\t  dv_press.y" << "\n";
+	for (auto*& i : SPH.Particles) {
+		if(i->m_type == REAL){
+			if (i->m_id > (m_options.nrOfParticles[PARTICLETYPE::REAL] - 71)) {
+				std::cout << i->m_id << " " << drhodt[i->m_id] << " " << (dvdt_dvisc)[i->m_id].x << ", " << (dvdt_dvisc)[i->m_id].y << " " << (dvdt_press)[i->m_id].x << ", " << (dvdt_press)[i->m_id].y << "\n";
+			}
+		}
 	}
 	//std::cout << " = " << drhodt[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1] << " " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1]->m_density.dval << "\n";
+	//std::cout << " = " << drhodt[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1] << " == " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1]->m_density.dval << "\n";
+	//std::cout << " = " << dvdt[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1].x << " == " << SPH.Particles[m_options.nrOfParticles[PARTICLETYPE::REAL] - 1]->m_velocity.dval.x << "\n";
 }
 
 
