@@ -1,8 +1,14 @@
 #pragma once
 
 
-typedef double part_prec;
-typedef glm::highp_dvec3 part_prec_3;
+//typedef double part_prec;
+//typedef glm::highp_dvec3 part_prec_3;
+typedef float part_prec;
+typedef glm::vec3 part_prec_3;
+
+
+
+
 
 enum PARTICLETYPE
 {
@@ -15,7 +21,7 @@ enum PARTICLETYPE
 template <class T>
 struct Ch_ {
 public:
-	Ch_(T v=static_cast<T>(0)) : val(v) {}
+	Ch_(T v=static_cast<T>(0)) : val(v),dval(static_cast<T>(0.0)) {}
 	T val;
 	T dval;
 };
@@ -79,8 +85,9 @@ public:
 
 	part_prec dx(Particle* other) { return this->m_position.val.x - other->m_position.val.x; }
 	part_prec dy(Particle* other) { return this->m_position.val.y - other->m_position.val.y; }
-	part_prec dz(Particle* other) {	return this->m_position.val.z - other->m_position.val.z; }
-	part_prec distance(Particle* other) { return std::sqrt(pow(this->dx(other), 2) + pow(this->dy(other), 2) + pow(this->dz(other), 2)); }
+	part_prec dz(Particle* other) { return this->m_position.val.z - other->m_position.val.z; }
+	part_prec_3 dr(Particle* other) { return this->m_position.val - other->m_position.val; }
+	part_prec distance(Particle* other) { return std::sqrt(dot(dr(other), dr(other))); }
 
 
 
@@ -88,25 +95,33 @@ public:
 	part_prec dVy(Particle* other) { return this->m_velocity.val.y - other->m_velocity.val.y; }
 	part_prec dVz(Particle* other) { return this->m_velocity.val.z - other->m_velocity.val.z; }
 
-	part_prec_3 dV(Particle* other) { return { this->dVx(other),this->dVy(other),this->dVz(other) }; }
+	part_prec_3 dV(Particle* other) { return this->m_velocity.val - other->m_velocity.val; }
 
 
 	part_prec dx(glm::vec3 pos) { return this->m_position.val.x - pos.x; }
 	part_prec dy(glm::vec3 pos) { return this->m_position.val.y - pos.y; }
 	part_prec dz(glm::vec3 pos) { return this->m_position.val.z - pos.z; }
-	part_prec distance(glm::vec3 pos) { return std::sqrt(pow(this->dx(pos), 2) + pow(this->dy(pos), 2) + pow(this->dz(pos), 2)); }
+	part_prec_3 dr(glm::vec3 pos) { return { dx(pos), dy(pos), dz(pos) };}
+	part_prec distance(glm::vec3 pos) { return std::sqrt(dot(dr(pos), dr(pos))); }
 	
 
 	void p_art_water() {
-		float gamma = 7.0f;
-		float Dens0 = 1000;
-		float b = 1.013E05f;
-		setSoundVel(1480.f);
+		int gamma = 7;
+		setSoundVel(1480.0);
+		part_prec Pressure0 = 1.0E05;
+		part_prec b = 100.0;
+
+		part_prec Dens0 = 1.0;
+
 		//p = b * ((m_dens / Dens0)**gamma - 1)
 		//m_pressure.val = (b*pow((m_density.val / Dens0), gamma) - 1);
-		m_pressure.val = Dens0 * pow(m_SoundVelocity,2) / gamma * (pow(m_density.val / Dens0, gamma) - 1.f);
-		if(m_id == 4900 - 1)
-			std::cout << "pressure = " << Dens0 << "*" << pow(m_SoundVelocity, 2) << "/" << gamma << "*(" << "(" << m_density.val <<"/"<< Dens0 << ")^" << gamma << "-" << 1.f << ")" << "=" << m_pressure.val << "\n";
+		//m_pressure.val = Pressure0 + Dens0 * pow(m_SoundVelocity, 2) / static_cast<part_prec>(gamma) * (pow(m_density.val / Dens0, gamma) - static_cast<part_prec>(1.0));
+		//m_pressure.val = pow(m_SoundVelocity, 2)  * (m_density.val - Dens0);
+		m_pressure.val = b* (pow(m_density.val / Dens0, gamma) - static_cast<part_prec>(1.0));
+		//if(m_id == 961 - 31){
+		//	std::cout << "density = " <<m_density.val << "\n";
+		//	std::cout << "pressure = " << Dens0 << "*" << pow(m_SoundVelocity, 2) << "/" << gamma << "*(" << "(" << m_density.val <<"/"<< Dens0 << ")^" << gamma << "-" << 1.f << ")" << "=" << m_pressure.val << "\n";
+		//}
 	}
 	void p_gas() {
 		float gamma = 1.4f;
@@ -137,10 +152,13 @@ private:
 			m_DVisc = 1.0E-03;
 
 
-		m_DVisc = 1000E-03;
+		m_DVisc = 1000E-06;
 	}
 public: 
 	glm::vec3 InitPolygonNormal;// = glm::vec3(0.f);
 	glm::vec3 GetNormal() { return this->InitPolygonNormal; }
 };
+
+
+
 
