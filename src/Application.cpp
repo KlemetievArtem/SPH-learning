@@ -291,6 +291,9 @@ Application::Application(const char* title,
 	this->cursorPosition = glm::vec3(0.f);
 
 
+
+
+
 	this->initGLFW();
 	this->initWindow(title, resizable);
 	this->initGLEW();
@@ -312,7 +315,6 @@ Application::Application(const char* title,
 
 
 	this->CompDomainInit();
-
 
 
 }
@@ -545,7 +547,7 @@ void Application::updateInput() {
 void Application::update() {
 	//UPDATE COMPUTATIONAL DOMAIN
 
-	//ÏÀÐÀËËÅËÈÌ
+	//ÐŸÐÐ ÐÐ›Ð›Ð•Ð›Ð˜Ðœ
 	for (auto*&i : this->ComputationalDomains) {
 		//std::cout << "first\n";
  		i->timeStep(i->getDeltaTime());
@@ -586,7 +588,10 @@ void Application::update() {
 
 }
 
-void Application::render() {	
+void Application::render() {
+	if ((application_mode == MODE::DEBUG_WITHOUT_RENDERING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
+		std::cout << "Application::render\n";
+	}
 
 
 
@@ -604,7 +609,7 @@ void Application::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//Use a program
 
-	//ÏÀÐÀËËÅËÈÒÜ
+	//ÐŸÐÐ ÐÐ›Ð›Ð•Ð›Ð˜Ð¢Ð¬
 	if((application_mode== MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)){
 		for (auto*&i : this->ComputationalDomains) {
 			i->punctualColorChange(localnumber, glm::vec3(0.f));
@@ -645,8 +650,13 @@ void Application::render() {
 	for (auto*&i : this->ComputationalDomains) {
 		ImGui::Text("Time %.5f ", i->getCurrentTime());
 	}
+	ImGui::InputText(" - Coloring parameter", app_coloringParam, 10);
+
 	for (auto*&i : this->ComputationalDomains) {
-		ImGui::Text("Coloring parameter: %s", (i->ColoringParam).c_str());
+		i->changeColorParamTo(app_coloringParam);
+
+		if(i->ColoringUnknow == true) ImGui::Text("Coloring parameter: id");
+		else ImGui::Text("Coloring parameter: %s", (i->ColoringParam).c_str());
 		ImGui::Text("MinColor Value: %.6f, MaxColor Value: %.6f", i->m_minVal, i->m_maxVal);
 	}
 	for (auto*&i : this->ComputationalDomains) {
@@ -658,6 +668,7 @@ void Application::render() {
 
 	
 	ImGui::SliderFloat3("Mouse ", &cursorPosition.x, 0.0f, 1.0f,"%.3f",0.5f);
+
 	if (this->currentOption)
 	{
 		this->currentOption->OnUpdateEnd();
@@ -697,13 +708,16 @@ void Application::render() {
 	//	delete i;
 
 
-	//ÏÀÐÀËËÅËÈÒÜ
+	//ÐŸÐÐ ÐÐ›Ð›Ð•Ð›Ð˜Ð¢Ð¬
 	//if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
 	//	for (auto*&i : this->ComputationalDomains) {
 	//		i->AfterRendering(&models);
 	//	}
 	//}
 
+	if ((application_mode == MODE::DEBUG_WITHOUT_RENDERING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
+		std::cout << "\n";
+	}
 
 
 }
@@ -880,7 +894,7 @@ void Application::CursorUpdate() {
 void Application::CompDomainInit() {
 	SPH_OPTIONS options;
 	options.nrOfParticles[PARTICLETYPE::REAL] = 5000;
-	options.nrOfParticles[PARTICLETYPE::BOUNDARY] = 400;
+	options.nrOfParticles[PARTICLETYPE::BOUNDARY] = 280;
 	options.nrOfParticles[PARTICLETYPE::VIRTUAL] = 0;
 	this->ComputationalDomains.push_back(new SPH_CD(options, D2));
 
@@ -891,9 +905,9 @@ void Application::CompDomainInit() {
 
 	for (auto*&i : this->ComputationalDomains) {
 
-		i->setInitialDeltaTime(0.0005);
+		i->setInitialDeltaTime(0.000005);
 
-		std::vector<ÑD_Boundary*> Boundaries;
+		std::vector<Ð¡D_Boundary*> Boundaries;
 		std::vector<Mesh*> meshes;
 		//meshes.push_back(new Mesh(&Quad(glm::vec3(i->getXmin(), i->getYmin(), i->getZmin()), Quad::QuadNormal(Quad::X, Quad::PLUS), (i->getYmax() - i->getYmin()), (i->getZmax() - i->getZmin())), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)));
 		//meshes.push_back(new Mesh(&Quad(glm::vec3(i->getXmin(), i->getYmin(), i->getZmin()), Quad::QuadNormal(Quad::Y, Quad::PLUS), (i->getXmax() - i->getXmin()), (i->getZmax() - i->getZmin())), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)));
@@ -917,19 +931,19 @@ void Application::CompDomainInit() {
 		float BCval_List[] = { 0.f, 0.0f, 0.f, 0.1f, 0.0f, 0.0f,};
 		int count = 0;
 
-		//Boundaries.push_back(new ÑD_Boundary(meshes[0], meshes[2]));
-		Boundaries.push_back(new ÑD_Boundary(meshes[0], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0f));   //ËÅÂÎ
+		//Boundaries.push_back(new Ð¡D_Boundary(meshes[0], meshes[2]));
+		Boundaries.push_back(new Ð¡D_Boundary(meshes[0], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0f));   //Ð›Ð•Ð’Ðž
 
-		Boundaries.push_back(new ÑD_Boundary(meshes[1], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0));   //ÍÈÇ
+		Boundaries.push_back(new Ð¡D_Boundary(meshes[1], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0));   //ÐÐ˜Ð—
 
-		//Boundaries.push_back(new ÑD_Boundary(meshes[2], meshes[0]));
-		Boundaries.push_back(new ÑD_Boundary(meshes[2], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0f));   //ÂÅÐÏÐÀÂÎ
+		//Boundaries.push_back(new Ð¡D_Boundary(meshes[2], meshes[0]));
+		Boundaries.push_back(new Ð¡D_Boundary(meshes[2], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0f));   //ÐŸÐ ÐÐ’Ðž
 		
-		Boundaries.push_back(new ÑD_Boundary(meshes[3], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 0.0));   //ÂÅÐÕ
+		Boundaries.push_back(new Ð¡D_Boundary(meshes[3], BOUNDARYCONDITION::FIRSTORDER_BC, BCPARAMETER::VELOCITY_X, 1.0f));   //Ð’Ð•Ð Ð¥
 
 
 		for (auto* j : meshes) {
-			//Boundaries.push_back(new ÑD_Boundary(j, BCtype_List[count], BCparam_List[count], BCval_List[count]));
+			//Boundaries.push_back(new Ð¡D_Boundary(j, BCtype_List[count], BCparam_List[count], BCval_List[count]));
 			//count++;
 			//j->printAll();
 			delete j;

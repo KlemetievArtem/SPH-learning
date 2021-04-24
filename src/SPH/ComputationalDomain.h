@@ -2,10 +2,11 @@
 
 #include "virtualComputationalDomain.h"
 #include "Particle.h"
-#include "FiniteParticleMethodFULL.h"
+//#include "FiniteParticleMethodFULL.h"
 
-enum NBSearchAlgorithm {
-	DIRECT
+enum NEIGBOURS_SEARCH_ALGORITHM {
+	DIRECT,
+	UNIFORM_GRID
 };
 enum DISTRIBUTION {
 	RANDOM,
@@ -45,7 +46,6 @@ enum BOUNDARY_HANDLING {
 };
 
 
-
 struct ParticleRendererBuffer {
 	part_prec_3 position;
 	glm::vec3 color;
@@ -56,8 +56,8 @@ struct ParticleRendererBuffer {
 // Передавать одни и теже опции в SPH и в пары
 struct SPH_OPTIONS {
 	unsigned int nrOfParticles[ALLTYPES];
-	NBSearchAlgorithm NBSAlg = DIRECT;
-	DIMENSIONS KernelDimension = D1;
+	NEIGBOURS_SEARCH_ALGORITHM NBSAlg = UNIFORM_GRID; // DIRECT	UNIFORM_GRID
+	//DIMENSIONS KernelDimension = D1;
 
 	part_prec smoothingKernelLengthCoefficient = 3.0;
 
@@ -65,30 +65,32 @@ struct SPH_OPTIONS {
 	GLOBAL_METHOD SPH_iteration_algorithm = FINITE_PARTICLE_METHOD;
 
 
-	VAL_CHANGE_USING densityChangeUsing = DVAL_DT; //VAL;
-	int densityChangeAlgorithm = 1;
+	VAL_CHANGE_USING densityChangeUsing = DVAL_DT; // VAL DVAL_DT
+	int densityChangeAlgorithm = 2;
 	int velocityChangeAlgorithm_pressurePart = 1;
 	int velocityChangeAlgorithm_viscosityPart = 2;
 
-	DISTRIBUTION distributionREAL = UNIFORM;//RANDOM;
-	DISTRIBUTION distributionBOUNDARY = UNIFORM;
-	TIME_INTEGRATION_SCHEME timeIntegrationScheme = EXPLICIT;
+	DISTRIBUTION distributionREAL = UNIFORM; // RANDOM UNIFORM
+	DISTRIBUTION distributionBOUNDARY = UNIFORM; // RANDOM UNIFORM
+	TIME_INTEGRATION_SCHEME timeIntegrationScheme = NONE; // EXPLICIT IMPLICIT SEMI_IMPICIT SECOND_ORDER_SCEME NONE
 
 
-	BOUNDARY_HANDLING boundary_handling = MIRROR_PARTICLES;
+	BOUNDARY_HANDLING boundary_handling = MIRROR_PARTICLES; // MIRROR_PARTICLES RENORMALIZATION
 
-
+	// true  false
 	bool firstCycle = true;
-
-	bool cornerVP = true; //true
-
+	bool cornerVP = false; 
 	bool IsStab = false;
 	bool Density_Diffusion_term = false;
+
+
+	part_prec_3 average_dim_steps;
 
 };
 
 #include "ParticlePair.h"
 #include "BoudaryMentor.h"
+#include "UniformTreeGrid.h"
 
 struct SPH_ESENTIALS {
 	std::vector<Particle*> Particles;
@@ -108,12 +110,13 @@ private:
 
 	bool FirstSycle = true;
 
-	float BH_D;
-	float BH_r;
+	part_prec BH_D;
+	part_prec BH_r;
 	BoundaryMentor BM;
 	//std::unique_ptr<BoundaryMentor> BM;
 	std::vector<ParticleRendererBuffer> PRB;
 
+	uniformTreeGrid_2D* UG;
 
 public:
 
@@ -140,11 +143,13 @@ public:
 	void timeStep(cd_prec dt);
 
 	void neighbourSearch();
+	void uniformGridPartitionSearch();
+	void uniformGridPartitionInitialization();
 	void creatingVirtualParticles();
 	void addingVirtualTOPairs();
 	void deletingParticlePairs();
 
-	void AfterRendering();
+	void DeletingVirtualParticles();
 
 
 	void DensityVariation();
