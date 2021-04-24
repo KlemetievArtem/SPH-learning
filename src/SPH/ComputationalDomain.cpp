@@ -610,7 +610,11 @@ void SPH_CD::DeletingVirtualParticles() {
 		}
 	}
 }
-void SPH_CD::AfterRendering(std::vector<Model*>* models) {}
+void SPH_CD::AfterRendering(std::vector<Model*>* models) {
+	for (auto*& i : SPH.Particles) {
+		i->refreshNeighbours();
+	}
+}
 
 void SPH_CD::timeStep(cd_prec dt) {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
@@ -898,20 +902,29 @@ void SPH_CD::timeStep(cd_prec dt) {
 
 }
 
+bool SPH_CD::chekParticlePairsFor(Particle* p1, Particle* p2) {
+	for (auto pair : SPH.ParticlePairs) {
+		if (((pair->Mpart_ptr->m_id == p1->m_id) and (pair->NBpart_ptr->m_id == p2->m_id)) or ((pair->Mpart_ptr->m_id == p2->m_id) and (pair->NBpart_ptr->m_id == p1->m_id))) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void SPH_CD::neighbourSearch() {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) { std::cout << "SPH_CD::neighbourSearch::PARTICLE_PAIRS_WERE_CREATED::" << SPH.ParticlePairs.size() << " --> "; }
 	switch (m_options.NBSAlg) {
 	case(NEIGBOURS_SEARCH_ALGORITHM::DIRECT):
-		// Пытаемся избежать лишних пар
+		// Точно правильно
 		for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 ет.к. у последнего уже нету соседей
 			Particle* i_p = SPH.Particles[i];
 			BM.resetBoundaryData();
 			//std::cout << i_p->m_id << "_th particle has neighbours: \n";
 			for (int j = i + 1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 ет.к. у последнего уже нету соседей
 				Particle* j_p = SPH.Particles[j];
-				if (i_p == j_p) continue; 
+				if (i_p == j_p) continue;
 				if ((j_p->m_type == PARTICLETYPE::BOUNDARY) and (i_p->m_type == PARTICLETYPE::BOUNDARY)) continue; // Не учитываем пары Граница-Граница  
-				if (i_p->distance(j_p) <= m_options.smoothingKernelLengthCoefficient * (i_p->m_SmR+j_p->m_SmR)/2.0) SPH.ParticlePairs.push_back(new ParticlePair(i_p, j_p, nrOfDim)); //CREATING PAIRS
+				if (i_p->distance(j_p) <= m_options.smoothingKernelLengthCoefficient * (i_p->m_SmR + j_p->m_SmR) / 2.0) SPH.ParticlePairs.push_back(new ParticlePair(i_p, j_p, nrOfDim)); //CREATING PAIRS
 				j_p = nullptr;
 			}
 			//delete j_p;
@@ -1020,6 +1033,9 @@ void SPH_CD::neighbourSearch() {
 void SPH_CD::uniformGridPartitionInitialization() {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) { std::cout << "SPH_CD::uniformGridPartitionInitialization\n"; }
 	UG = new uniformTreeGrid_2D(getXmin() - 2.0*m_options.smoothingKernelLengthCoefficient * InitialSmR, getXmax() + 2.0* m_options.smoothingKernelLengthCoefficient * InitialSmR, getYmin() - 2.0*m_options.smoothingKernelLengthCoefficient * InitialSmR, getYmax() + 2.0*m_options.smoothingKernelLengthCoefficient * InitialSmR);
+	std::set<uniformTreeGrid_2D*> allpossibleNB;
+	UG->FindNeighboursCells(allpossibleNB);
+	UG->AssignNeighbourCells(allpossibleNB);
 }
 
 
@@ -1057,7 +1073,7 @@ void SPH_CD::creatingVirtualParticles() {
 	Min_smR *= m_options.smoothingKernelLengthCoefficient;
 	int VirtualParticleCount = 0;
 
-
+	int count = 0;
 
 	for (auto*& i : SPH.ParticlePairs) {
 
@@ -1088,28 +1104,35 @@ void SPH_CD::creatingVirtualParticles() {
 		else {
 			continue;
 		}
-		//std::cout << real_p->m_id << "    " << neighbour_p->m_id << "\n";
 
-		//glm::vec3 normal = SPH.Particles[neighbour_p->m_id]->InitPolygonNormal;
-		//glm::vec3 pos_bound = SPH.Particles[neighbour_p->m_id]->m_position.val;
-		//glm::vec3 pos_real = SPH.Particles[real_p->m_id]->m_position.val;
+		//std::cout << real_p->m_id << "    " << neighbour_p->m_id << "\n";
 		part_prec_3 normal = neighbour_p->InitPolygonNormal;
 		part_prec_3 pos_bound = neighbour_p->m_position.val;
 		part_prec_3 pos_real = real_p->m_position.val;
 		part_prec T = ((normal.x*(pos_bound.x - pos_real.x)) + (normal.y*(pos_bound.y - pos_real.y)) + (normal.z*(pos_bound.z - pos_real.z))) / (normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
 		part_prec_3 projected_real = glm::vec3(normal.x * T + pos_real.x, normal.y * T + pos_real.y, normal.z * T + pos_real.z);
 		part_prec distance = abs(SPH.Particles[real_p->m_id]->distance(projected_real));
-
-
+		//std::cout << "("<<pos_bound.x << ", " << pos_bound.y<<"), (" << pos_real.x << ", " << pos_real.y  << "), "<< distance << "\n";
 		//SPH.Particles[real_p->m_id]->VirtualCounterpart = false;
 
 		bool VCcondition = false;
-		if (BM.boundarySecBar1()) {
-			if (BM.boundarySecBar2(real_p->m_id)) {
-				BM.BoundaryLinks[real_p->m_id].VirtualCounterpartReset();
-				VCcondition = BM.BoundaryLinks[real_p->m_id].newVirtualCounterpart(normal, 0.9f);
+		if (m_options.cornerVP) {
+			if (BM.boundarySecBar1()) {
+				if (BM.boundarySecBar2(real_p->m_id)) {
+					BM.BoundaryLinks[real_p->m_id].VirtualCounterpartReset();
+					VCcondition = BM.BoundaryLinks[real_p->m_id].newVirtualCounterpart(normal, 0.9f);
+				}
 			}
-		}				
+		}
+		else {
+			if (BM.boundarySecBar1()) {
+				if (BM.boundarySecBar2(real_p->m_id)) {
+					BM.BoundaryLinks[real_p->m_id].VirtualCounterpartReset();
+					VCcondition = BM.BoundaryLinks[real_p->m_id].newVirtualCounterpart(normal, 0.9f);
+				}
+			}
+		}
+		//std::cout << VCcondition << "\n";
 		//if ((distance <= Max_smR) and !(SPH.Particles[real_p->m_id]->VirtualCounterpart)) {
 		if ((distance <= 2.0*Min_smR) and !(VCcondition)) {
 
@@ -1141,17 +1164,17 @@ void SPH_CD::creatingVirtualParticles() {
 				//std::cout << "virtualVelocity{x,y,z} = {" << virtualVelocity.x << ", " << virtualVelocity.y << ", " << virtualVelocity.z << "}\n";
 				SPH.Particles.push_back(new Particle(m_options.nrOfParticles[PARTICLETYPE::REAL] + m_options.nrOfParticles[PARTICLETYPE::BOUNDARY] + VirtualParticleCount, PARTICLETYPE::VIRTUAL, virtualPosition, virtualVelocity, SPH.Particles[i->Mpart_ptr->m_id]->m_SmR, SPH.Particles[i->Mpart_ptr->m_id]->m_density.val, SPH.Particles[i->Mpart_ptr->m_id]->m_mass));
 				VirtualParticleCount++;
-				if (m_options.cornerVP) {
 
-					if (BM.boundarySecBar2(real_p->m_id)) {
-						if (BM.BoundaryLinks[real_p->m_id].NrOfNormals() >= 1) {
-							BM.BoundaryLinks[real_p->m_id].addingBoundary(normal, distance, SPH.Particles[neighbour_p->m_id]->m_velocity.val, SPH.Particles[neighbour_p->m_id]->particle_boundary->isPeriodic(), distanceToPeriodic_part, virtualPosition, virtualVelocity);
-						}
+				if (BM.boundarySecBar2(real_p->m_id)) {
+					if (BM.BoundaryLinks[real_p->m_id].NrOfNormals() >= 1) {
+						BM.BoundaryLinks[real_p->m_id].addingBoundary(normal, distance, SPH.Particles[neighbour_p->m_id]->m_velocity.val, SPH.Particles[neighbour_p->m_id]->particle_boundary->isPeriodic(), distanceToPeriodic_part, virtualPosition, virtualVelocity);
 					}
-					else {
-						BM.BoundaryLinks.insert({ real_p->m_id,BoundaryData(normal,distance,SPH.Particles[neighbour_p->m_id]->m_velocity.val) });
-						BM.BoundaryLinks[real_p->m_id].furtherInitialization(SPH.Particles[neighbour_p->m_id]->particle_boundary->isPeriodic(), distanceToPeriodic_part, virtualPosition, virtualVelocity);
-					}
+				}
+				else {
+					BM.BoundaryLinks.insert({ real_p->m_id,BoundaryData(normal,distance,SPH.Particles[neighbour_p->m_id]->m_velocity.val) });
+					BM.BoundaryLinks[real_p->m_id].furtherInitialization(SPH.Particles[neighbour_p->m_id]->particle_boundary->isPeriodic(), distanceToPeriodic_part, virtualPosition, virtualVelocity);
+				}
+				if (m_options.cornerVP) {
 
 					if (BM.BoundaryLinks[real_p->m_id].NrOfNormals() >= 2) {
 					//if (SPH.Particles[real_p->m_id]->VirtualCounterpartNormals.size() == 2) {
@@ -1472,7 +1495,6 @@ void SPH_CD::SaveMaxVelocity() {
 	BH_D = 0.f;
 	part_prec max_drho = 0.0;
 	for (auto*& i : SPH.Particles) {
-		i->refreshNeighbours();
 		i->absVelocity = sqrt(pow(i->m_velocity.val.x, 2)+ pow(i->m_velocity.val.y, 2)+ pow(i->m_velocity.val.z, 2));
 		//Boundary handling parametrs assignment
 		if(i->m_type == REAL){
@@ -2035,15 +2057,53 @@ void SPH_CD::Coloring() {
 		}
 	}
 	}
+	//else {
+	//	ColoringUnknow = true;
+	//	changeColorParamTo("id");
+	//	float maxVal = SPH.Particles[0]->m_id;
+	//	float minVal = SPH.Particles[0]->m_id;
+	//	for (auto*& i : SPH.Particles) {
+	//		if (COLORING_CONDITION(i)) {
+	//			if (i->m_id < minVal) { minVal = i->m_id; }
+	//			if (i->m_id > maxVal) { maxVal = i->m_id; }
+	//		}
+	//	}
+	//	float aveVal = (minVal + maxVal) / 2;
+	//	m_maxVal = maxVal;
+	//	m_minVal = minVal;
+	//
+	//	for (auto*& i : SPH.Particles) {
+	//
+	//		if (COLORING_CONDITION(i)) {
+	//			currentVal = i->m_id;
+	//
+	//			if ((currentVal >= minVal) and (currentVal <= aveVal)) {
+	//				Red = 0.f;
+	//				Green = (1.f - 0.f) / (aveVal - minVal)*(currentVal - minVal) + 0.f;
+	//				Blue = 1.f - (1.f - 0.f) / (aveVal - minVal)*(currentVal - minVal);
+	//			}
+	//			else if ((currentVal > aveVal) and (currentVal <= maxVal)) {
+	//				Red = (1.f - 0.f) / (maxVal - aveVal)*(currentVal - aveVal) + 0.f;
+	//				Green = 1.f - (1.f - 0.f) / (maxVal - aveVal)*(currentVal - aveVal);
+	//				Blue = 0.f;
+	//			}
+	//			if (minVal == maxVal) {
+	//				Red = 0.f;
+	//				Green = 1.f;
+	//				Blue = 0.f;
+	//			}
+	//			i->m_color = glm::vec3(Red, Green, Blue);
+	//		}
+	//	}
+	//}
 	else {
-		ColoringUnknow = true;
-		changeColorParamTo("id");
-		float maxVal = SPH.Particles[0]->m_id;
-		float minVal = SPH.Particles[0]->m_id;
+		changeColorParamTo("nrOfNeighbours");
+		float maxVal = SPH.Particles[0]->nrOfNeighbours;
+		float minVal = SPH.Particles[0]->nrOfNeighbours;
 		for (auto*& i : SPH.Particles) {
 			if (COLORING_CONDITION(i)) {
-				if (i->m_id < minVal) { minVal = i->m_id; }
-				if (i->m_id > maxVal) { maxVal = i->m_id; }
+				if (i->nrOfNeighbours < minVal) { minVal = i->nrOfNeighbours; }
+				if (i->nrOfNeighbours > maxVal) { maxVal = i->nrOfNeighbours; }
 			}
 		}
 		float aveVal = (minVal + maxVal) / 2;
@@ -2053,7 +2113,7 @@ void SPH_CD::Coloring() {
 		for (auto*& i : SPH.Particles) {
 
 			if (COLORING_CONDITION(i)) {
-				currentVal = i->m_id;
+				currentVal = i->nrOfNeighbours;
 
 				if ((currentVal >= minVal) and (currentVal <= aveVal)) {
 					Red = 0.f;
