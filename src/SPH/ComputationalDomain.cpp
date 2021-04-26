@@ -1,6 +1,4 @@
 #include "ComputationalDomain.h"
-#include "BoudaryMentor.h"
-#include <cstdlib>
 
 
 part_prec InitialSmR = 0.0125;
