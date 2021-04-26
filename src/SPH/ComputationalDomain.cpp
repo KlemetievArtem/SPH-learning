@@ -911,12 +911,12 @@ bool SPH_CD::chekParticlePairsFor(Particle* p1, Particle* p2) {
 
 void SPH_CD::neighbourSearch() {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) { std::cout << "SPH_CD::neighbourSearch::PARTICLE_PAIRS_WERE_CREATED::" << SPH.ParticlePairs.size() << " --> "; }
+	BM.resetBoundaryData();
 	switch (m_options.NBSAlg) {
 	case(NEIGBOURS_SEARCH_ALGORITHM::DIRECT):
 		// Точно правильно
 		for (int i = 0;i < SPH.Particles.size();i++) {  //  SPH.Particles.size()-1 ет.к. у последнего уже нету соседей
 			Particle* i_p = SPH.Particles[i];
-			BM.resetBoundaryData();
 			//std::cout << i_p->m_id << "_th particle has neighbours: \n";
 			for (int j = i + 1;j < SPH.Particles.size();j++) { //  SPH.Particles.size()-1 ет.к. у последнего уже нету соседей
 				Particle* j_p = SPH.Particles[j];
