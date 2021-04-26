@@ -1125,12 +1125,6 @@ void SPH_CD::creatingVirtualParticles() {
 			}
 		}
 		else {
-			if (BM.boundarySecBar1()) {
-				if (BM.boundarySecBar2(real_p->m_id)) {
-					BM.BoundaryLinks[real_p->m_id].VirtualCounterpartReset();
-					VCcondition = BM.BoundaryLinks[real_p->m_id].newVirtualCounterpart(normal, 0.9f);
-				}
-			}
 		}
 		//std::cout << VCcondition << "\n";
 		//if ((distance <= Max_smR) and !(SPH.Particles[real_p->m_id]->VirtualCounterpart)) {
