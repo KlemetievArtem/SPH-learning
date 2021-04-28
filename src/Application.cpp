@@ -317,11 +317,43 @@ Application::Application(const char* title,
 	this->CompDomainInit();
 
 
+
+	if(CalculateParallelToRender){
+		this->initThread();
+	}
+}
+void Application::initThread() {
+	//mainCalculationThread = std::make_unique<std::thread>([]()->void {
+	//	std::cout << "Entering thread: " << std::this_thread::get_id() << "\n";
+	//});
+	mainCalculationThread = std::make_unique<std::thread>([this]() -> void {
+		while (this->MCThreadLoopCondition) {
+			for (auto*&i : this->ComputationalDomains) {
+				//std::cout << "first\n";
+				i->timeStep_thread(i->getDeltaTime(),std::ref(this->dataReadyForRender), std::ref(this->dataIsRendering));
+			}
+		}
+	});	
+}
+void Application::calculationLoop() {
+	std::cout << "Entering thread: " << std::this_thread::get_id() << "\n";
+}
+
+void Application::joinThread() {
+	MCThreadLoopCondition = false;
+	mainCalculationThread->join();
 }
 
 
 Application::~Application()
 {
+
+	if (CalculateParallelToRender) {
+		this->joinThread();
+	}
+
+
+
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -352,6 +384,7 @@ Application::~Application()
 		//delete this->ligts[i];
 	//for (size_t i = 0;i < this->eventQueue.size();i++)
 	//	delete this->eventQueue[i];
+
 
 }
 //Accessor
@@ -548,30 +581,34 @@ void Application::update() {
 	//UPDATE COMPUTATIONAL DOMAIN
 
 	//ПАРАЛЛЕЛИМ
-	for (auto*&i : this->ComputationalDomains) {
-		//std::cout << "first\n";
- 		i->timeStep(i->getDeltaTime());
+
+	if (CalculateParallelToRender) { }
+	else {
+		for (auto*&i : this->ComputationalDomains) {
+			//std::cout << "first\n";
+			i->timeStep(i->getDeltaTime());
+		}
 	}
 
 
 
 	//UPDATE INPUT
 	
-	if (this->currentOption->getFlag()) {
-		this->currentOption->setFlag(false);
-		this->currentOption->outside();
-
-
-		std::vector<Mesh*> meshes;
-
-		if (this->currentOption) {
-			this->currentOption->InitModels(&meshes, &models);
-		}
-		//std::cout << meshes.size();
-		this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes));
-		for (auto*& i : meshes)
-			delete i;
-	}
+	//if (this->currentOption->getFlag()) {
+	//	this->currentOption->setFlag(false);
+	//	this->currentOption->outside();
+	//
+	//
+	//	std::vector<Mesh*> meshes;
+	//
+	//	if (this->currentOption) {
+	//		this->currentOption->InitModels(&meshes, &models);
+	//	}
+	//	//std::cout << meshes.size();
+	//	this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes));
+	//	for (auto*& i : meshes)
+	//		delete i;
+	//}
 	
 
 	this->CursorUpdate();
@@ -610,12 +647,31 @@ void Application::render() {
 	//Use a program
 
 	//ПАРАЛЛЕЛИТЬ
-	if((application_mode== MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)){
-		for (auto*&i : this->ComputationalDomains) {
-			i->punctualColorChange(localnumber, glm::vec3(0.f));
-			i->UpdateRendering(&models);
+
+
+	if (CalculateParallelToRender) {
+		if (this->dataReadyForRender) {
+			this->dataIsRendering.store(true);
+			if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
+				for (auto*&i : this->ComputationalDomains) {
+					i->punctualColorChange(localnumber, glm::vec3(0.f));
+					i->UpdateRendering(&models);
+				}
+			}
+			this->dataIsRendering.store(false);
 		}
 	}
+	else {
+		if((application_mode== MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)){
+			for (auto*&i : this->ComputationalDomains) {
+				i->punctualColorChange(localnumber, glm::vec3(0.f));
+				i->UpdateRendering(&models);
+			}
+		}
+		std::cout << this->dataReadyForRender << "\n";
+	}
+
+
 
 
 
@@ -707,13 +763,27 @@ void Application::render() {
 	//for (auto*&i : this->RenewableModels)
 	//	delete i;
 
-
 	//ПАРАЛЛЕЛИТЬ
-	//if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
-	//	for (auto*&i : this->ComputationalDomains) {
-	//		i->AfterRendering(&models);
-	//	}
-	//}
+	if (CalculateParallelToRender) {
+		if (this->dataReadyForRender) {
+			this->dataIsRendering.store(true);
+			if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
+				for (auto*&i : this->ComputationalDomains) {
+					i->AfterRendering(&models);
+				}
+			}
+			this->dataIsRendering.store(false);
+		}
+	}
+	else {
+		if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
+			for (auto*&i : this->ComputationalDomains) {
+				i->AfterRendering(&models);
+			}
+		}
+	}
+
+
 
 	if ((application_mode == MODE::DEBUG_WITHOUT_RENDERING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
 		std::cout << "\n";
