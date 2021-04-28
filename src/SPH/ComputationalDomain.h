@@ -56,7 +56,8 @@ struct ParticleRendererBuffer {
 // Передавать одни и теже опции в SPH и в пары
 struct SPH_OPTIONS {
 	unsigned int nrOfParticles[ALLTYPES];
-	NEIGBOURS_SEARCH_ALGORITHM NBSAlg = UNIFORM_GRID; // DIRECT	UNIFORM_GRID
+
+	NEIGBOURS_SEARCH_ALGORITHM NBSAlg = DIRECT; // DIRECT	UNIFORM_GRID
 	//DIMENSIONS KernelDimension = D1;
 
 	part_prec smoothingKernelLengthCoefficient = 3.0;
@@ -72,14 +73,14 @@ struct SPH_OPTIONS {
 
 	DISTRIBUTION distributionREAL = UNIFORM; // RANDOM UNIFORM
 	DISTRIBUTION distributionBOUNDARY = UNIFORM; // RANDOM UNIFORM
-	TIME_INTEGRATION_SCHEME timeIntegrationScheme = NONE; // EXPLICIT IMPLICIT SEMI_IMPICIT SECOND_ORDER_SCEME NONE
+	TIME_INTEGRATION_SCHEME timeIntegrationScheme = EXPLICIT; // EXPLICIT IMPLICIT SEMI_IMPICIT SECOND_ORDER_SCEME NONE
 
 
 	BOUNDARY_HANDLING boundary_handling = MIRROR_PARTICLES; // MIRROR_PARTICLES RENORMALIZATION
 
 	// true  false
 	bool firstCycle = true;
-	bool cornerVP = false; 
+	bool cornerVP = true; 
 	bool IsStab = false;
 	bool Density_Diffusion_term = false;
 
@@ -89,7 +90,7 @@ struct SPH_OPTIONS {
 };
 
 #include "ParticlePair.h"
-#include "BoudaryMentor.h"
+#include "BoundaryMentor.h"
 #include "UniformTreeGrid.h"
 
 struct SPH_ESENTIALS {
@@ -119,12 +120,6 @@ private:
 	uniformTreeGrid_2D* UG;
 
 public:
-
-
-
-
-
-
 	SPH_CD(SPH_OPTIONS options, DIMENSIONS dim) {
 		setTypeTo(MICROCOSME::MC_SPH);
 		nrOfDim = dim;
@@ -141,6 +136,7 @@ public:
 	void singlestep();
 
 	void timeStep(cd_prec dt);
+	void timeStep_thread(cd_prec dt, std::atomic<bool>& dataReadyForRender, std::atomic<bool>& dataIsRendering);
 
 	void neighbourSearch();
 	void uniformGridPartitionSearch();
@@ -168,7 +164,7 @@ public:
 
 	void Dissipation(std::vector<float>& dissip);
 
-
+	bool chekParticlePairsFor(Particle* p1, Particle* p2);
 
 	void SPH_Iterations();
 	//
