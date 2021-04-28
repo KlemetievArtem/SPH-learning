@@ -29,8 +29,8 @@ class Application
 {
 private:
 //
-	MODE application_mode = DEBUG_WITH_RENDERING;
-
+	MODE application_mode = RUNNING;
+	bool CalculateParallelToRender = true;
 
 
 //Variables
@@ -96,12 +96,20 @@ private:
 	float light_radius=10.f;
 
 
+	char app_coloringParam[20];
 
 
 
 	std::vector<int> s_Presscount;
 
 
+
+
+	//Thread
+	std::unique_ptr<std::thread> mainCalculationThread;
+	void initThread();
+	void joinThread();
+	void calculationLoop();
 
 
 //Private functions
@@ -131,6 +139,11 @@ private:
 
 
 public:
+	//Thread
+	std::atomic<bool> dataReadyForRender = false;
+	std::atomic<bool> dataIsRendering = false;
+	std::atomic<bool> MCThreadLoopCondition = true;
+
 //Constructord and distructors
 	Application(const char*title,
 		const int WINDOW_WIDTH, const int WINDOW_HEIGHT,
@@ -247,5 +260,6 @@ public:
 
 
 };
+
 
 
