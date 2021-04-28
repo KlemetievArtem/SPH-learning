@@ -12,6 +12,8 @@
 
 typedef double cd_prec;
 
+#include <thread>
+#include <atomic>
 
 
 
