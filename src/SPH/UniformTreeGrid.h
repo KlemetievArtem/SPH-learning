@@ -155,15 +155,10 @@ public:
 	}
 
 	~uniformTreeGrid_2D() {
-		//leaves[0] = nullptr;
-		//leaves[1] = nullptr;
-		//leaves[2] = nullptr;
-		//leaves[3] = nullptr;
 		//clear();
-		delete leaves[0];
-		delete leaves[1];
-		delete leaves[2];
-		delete leaves[3];
+		for (auto i : leaves) {
+			delete i;
+		}
 	}
 };
 
@@ -344,18 +339,9 @@ public:
 	}
 
 	~uniformTreeGrid_3D() {
-		//leaves[0] = nullptr;
-		//leaves[1] = nullptr;
-		//leaves[2] = nullptr;
-		//leaves[3] = nullptr;
 		//clear();
-		delete leaves[0];
-		delete leaves[1];
-		delete leaves[2];
-		delete leaves[3];
-		delete leaves[4];
-		delete leaves[5];
-		delete leaves[6];
-		delete leaves[7];
+		for (auto i : leaves) {
+			delete i;
+		}
 	}
 };
