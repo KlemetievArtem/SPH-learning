@@ -169,11 +169,15 @@ void Application::initTextures() {
 	//TEXTURE 1
 	this->textures.push_back(new Texture("res/textures/GarfildThiccSexyUpsideDown.PNG", GL_TEXTURE_2D));
 	this->textures.push_back(new Texture("res/textures/GarfildThiccSexyUpsideDown_specular.PNG", GL_TEXTURE_2D));
+
+	this->textures.push_back(new Texture("res/textures/Plain.PNG", GL_TEXTURE_2D));
+	this->textures.push_back(new Texture("res/textures/Plain_specular.PNG", GL_TEXTURE_2D));
 }
 
 void Application::initMaterials() {
 	//MATERIAL0
 	this->materials.push_back(new Material(glm::vec3(0.3f), glm::vec3(0.9f), glm::vec3(1.f), 0, 1));
+	nrOfPresetMaterials++;
 
 }
 
@@ -194,23 +198,20 @@ void Application::initModels() {
 
 
 	this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], EssentialMeshes));
-	std::vector<Mesh*> meshes;
+	//std::vector<Mesh*> meshes;
 	//meshes.push_back(new Mesh(&Pyramid(), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)));
 	//meshes.push_back(new Mesh(&Quad(), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)));
 	//meshes.push_back(new Mesh(&Something(), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)));
-
-	//this->meshes.push_back(new Mesh(&Quad(), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)));
-
+	//this->meshes.push_back(new Mesh(&Quad(), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f)))
 	//this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes));
 	//this->models.push_back(new Model(glm::vec3(0.f,1.f,1.f), this->materials[0], this->textures[TEX_GTS], this->textures[TEX_GTS_SPECULAR], meshes));
 	//this->models.push_back(new Model(glm::vec3(2.f, 0.f, 2.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes));
 	//this->models.push_back(new Model(glm::vec3(4.f, 0.f, 4.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], "res/OBJFiles/10053_Walrus_v1_L3.obj"));
+	//this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes));
 
-	this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes));
 
-
-	for (auto*& i : meshes)
-		delete i;
+	//for (auto*& i : meshes)
+	//	delete i;
 }
 
 void Application::initLights() {
@@ -654,8 +655,18 @@ void Application::render() {
 			this->dataIsRendering.store(true);
 			if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
 				for (auto*&i : this->ComputationalDomains) {
+
+
+
+					//this->materials.push_back(new Material(glm::vec3(0.3f), glm::vec3(0.9f), glm::vec3(1.f), 0, 1));
+
 					i->punctualColorChange(localnumber, glm::vec3(0.f));
-					i->UpdateRendering(&models);
+					//i->UpdateRendering(&models);
+					//this->materials.push_back(new Material(glm::vec3(0.3f), glm::vec3(0.9f), glm::vec3(1.f), 0, 1));
+
+					//i->UpdateRendering(&models, this->textures[TEX_Plain], this->textures[TEX_Plain_SPECULAR]);
+					i->UpdateRendering(&models, this->textures[TEX_Plain], this->textures[TEX_Plain_SPECULAR], &materials);
+					//.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes))
 				}
 			}
 			this->dataIsRendering.store(false);
@@ -665,7 +676,11 @@ void Application::render() {
 		if((application_mode== MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)){
 			for (auto*&i : this->ComputationalDomains) {
 				i->punctualColorChange(localnumber, glm::vec3(0.f));
-				i->UpdateRendering(&models);
+				//i->UpdateRendering(&models);
+				i->UpdateRendering(&models, this->textures[TEX_Plain], this->textures[TEX_Plain_SPECULAR], &materials);
+
+				//.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], meshes))
+
 			}
 		}
 		std::cout << this->dataReadyForRender << "\n";
@@ -679,6 +694,7 @@ void Application::render() {
 
 
 
+	this->dataIsRendering.store(true);
 	if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
 		this->shaders[SHADER_CORE_PROGRAM]->use();
 		//this->shaders[RENEWABLE_SHADER]->use();
@@ -696,9 +712,10 @@ void Application::render() {
 		//for (auto&i : this->RenewableModels)
 		//	i->render(this->shaders[RENEWABLE_SHADER]);
 	}
+	this->dataIsRendering.store(false);
 
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	ImGui::Text("Press 'SPASE' to fix camera, press R to reset view");
+	ImGui::Text("Press 'SPASE' to fix camera and get a mouse cursor, press R to reset view");
 
 	for (auto*&i : this->ComputationalDomains) {
 		ImGui::Text("Particles in simulation: Real %.0f , Boundary %.0f , Virtual %.0f ", i->getGlobalStats(0), i->getGlobalStats(1), i->getGlobalStats(2));
@@ -1028,6 +1045,8 @@ void Application::CompDomainInit() {
 			BoundaryMeshing(i);
 		}
 		i->Initilization();
+		i->assignPresetModels(this->models.size());
+		i->assignPresetMaterials(this->materials.size());
 
 		//if ((application_mode == MODE::RUNNING) or (application_mode == MODE::DEBUG_WITH_RENDERING)) {
 		//	CDMeshing(i);
@@ -1042,7 +1061,7 @@ void Application::BoundaryMeshing(CompDomain* CDptr) {
 	//BOUNDARYMESHING
 	std::vector<Mesh*> B_meshes;
 	CDptr->InitialBoundaryRendering(&B_meshes);
-	this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_GTSud], this->textures[TEX_GTSud_SPECULAR], B_meshes));
+	this->models.push_back(new Model(glm::vec3(0.f), this->materials[0], this->textures[TEX_Plain], this->textures[TEX_Plain_SPECULAR], B_meshes));
 	CDptr->assignBoundaryModel(models.size() - 1);
 	for (auto*& i : B_meshes)
 		delete i;
