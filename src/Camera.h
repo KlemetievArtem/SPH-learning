@@ -75,7 +75,7 @@ private:
 				this->right.z = sin(glm::radians(this->yaw));
 				this->right = glm::normalize(this->right);
 				this->right = glm::normalize(glm::cross(this->front, this->up));
-				//Âîçìîæíî íå íàäî, à åñëè íàäî, òî ïğèäåòñÿ ïîäóìàòü
+				//Ğ’Ğ¾Ğ·Ğ¼Ğ¾Ğ¶Ğ½Ğ¾ Ğ½Ğµ Ğ½Ğ°Ğ´Ğ¾, Ğ° ĞµÑĞ»Ğ¸ Ğ½Ğ°Ğ´Ğ¾, Ñ‚Ğ¾ Ğ¿Ñ€Ğ¸Ğ´ĞµÑ‚ÑÑ Ğ¿Ğ¾Ğ´ÑƒĞ¼Ğ°Ñ‚ÑŒ
 				//this->worldUp = this->up; 
 			}
 			else {}
@@ -304,5 +304,6 @@ public:
 	}
 
 };
+
 
 
