@@ -19,7 +19,7 @@
 
 //ENUMERATIONS
 enum shader_enums{SHADER_CORE_PROGRAM=0, RENEWABLE_SHADER};
-enum texture_enum{TEX_GTS=0, TEX_GTS_SPECULAR, TEX_GTSud, TEX_GTSud_SPECULAR};
+enum texture_enum{TEX_GTS=0, TEX_GTS_SPECULAR, TEX_GTSud, TEX_GTSud_SPECULAR, TEX_Plain, TEX_Plain_SPECULAR,All_PRESET_TEXTURES};
 enum material_enum{MAT_1=0};
 enum MESH_ENUM { MESH_QUAD = 0 };
 
@@ -81,6 +81,7 @@ private:
 
 	//Materials
 	std::vector<Material*> materials;
+	int nrOfPresetMaterials = 0;
 
 	//Meshes
 	std::vector<Mesh*> EssentialMeshes;
@@ -260,6 +261,7 @@ public:
 
 
 };
+
 
 
 
