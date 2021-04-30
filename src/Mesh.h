@@ -31,34 +31,26 @@ private:
 	glm::vec3 scale;
 	glm::mat4 ModelMatrix;
 
-
 	void initVAO() {
-
-
-		//VAO,VBO,EBO
 		//GEN VAO AND BIND
 		glCreateVertexArrays(1, &this->VAO);
 		glBindVertexArray(this->VAO);
-
-
-		
-			
+	}
+	void initVBO() {
 		//GEN VBO AND BIND AND SEND DATA
 		glGenBuffers(1, &this->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		glBufferData(GL_ARRAY_BUFFER, this->nrOfVertices *sizeof(Vertex), this->vertexArray, GL_STREAM_DRAW);
-
+		glBufferData(GL_ARRAY_BUFFER, this->nrOfVertices * sizeof(Vertex), this->vertexArray, GL_STREAM_DRAW);
+	}
+	void initEBO() {
 		//GEN EBO AND BIND AND SEND DATA
 		if (this->nrOfIndices > 0) {
 			glGenBuffers(1, &this->EBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), this->indexArray, GL_STREAM_DRAW);
 		}
-
-
-
-		//SET VERTEXATTRIBUTEPOINTERS AND ENABLE
-		//GLuint attribLoc = glGetAttribLocation(core_program, "vertex_position");
+	}
+	void SetVertxAttributePointers() {
 		//Position
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
 		glEnableVertexAttribArray(0);
@@ -71,9 +63,21 @@ private:
 		//Normal
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
 		glEnableVertexAttribArray(3);
+	}
 
+	void initVAOVBOEBO() {
+		//VAO,VBO,EBO
+		this->initVAO();
+		this->initVBO();
+		this->initEBO();
+		//SET VERTEXATTRIBUTEPOINTERS AND ENABLE
+		//GLuint attribLoc = glGetAttribLocation(core_program, "vertex_position");
+		this->SetVertxAttributePointers();
 		//BIND VAO 0
 	}
+
+
+
 	/*
 
 	void initVAO(Vertex* VertexArray, const unsigned& nrOfVertices,
@@ -157,7 +161,7 @@ public:
 			this->indexArray[i] = IndexArray[i];
 		}
 
-		this->initVAO();
+		this->initVAOVBOEBO();
 		this->updaeteModelMatrix();
 	}
 	Mesh(Primitive* primitive,
@@ -179,7 +183,7 @@ public:
 			this->indexArray[i] = primitive->getIndices()[i];
 		}
 
-		this->initVAO();
+		this->initVAOVBOEBO();
 		this->updaeteModelMatrix();
 	}
 	Mesh(const Mesh& obj) {
@@ -200,7 +204,7 @@ public:
 			this->indexArray[i] = obj.indexArray[i];
 		}
 
-		this->initVAO();
+		this->initVAOVBOEBO();
 		this->updaeteModelMatrix();
 	}
 	Mesh(Mesh* newMesh) {
@@ -223,7 +227,7 @@ public:
 			this->indexArray[i] = newMesh->indexArray[i];
 		}
 
-		this->initVAO();
+		this->initVAOVBOEBO();
 		this->updaeteModelMatrix();
 	}
 
@@ -279,6 +283,13 @@ public:
 	}
 
 	void update() {
+		//this->updaeteModelMatrix();
+		glDeleteVertexArrays(1, &this->VAO);
+		glDeleteBuffers(1, &this->VBO);
+		if (this->nrOfIndices > 0) {
+			glDeleteBuffers(1, &this->EBO);
+		}
+		this->initVAOVBOEBO();
 
 	}
 	void render(Shader* shader) {
@@ -308,11 +319,30 @@ public:
 
 
 	void changeColorTo(glm::vec3 newcolor = glm::vec3(0.f)) {
+		int count = 0;
 		for (size_t i = 0; i < nrOfVertices; i++) {
-			this->vertexArray[i].color = newcolor;
+			//std::cout << this->vertexArray[i].color.x << "," << this->vertexArray[i].color.y << "," << this->vertexArray[i].color.z;
+			if (this->vertexArray[i].color != newcolor) {
+				this->vertexArray[i].color = newcolor;
+				count++;
+				continue;  //?
+			}
+			//std::cout << " - " << this->vertexArray[i].color.x << "," << this->vertexArray[i].color.y << "," << this->vertexArray[i].color.z << "\n";
 		}
-		//initVAO();   //Î×ÅÍÜ ÍÅ ÑÓÏÅÐ
+		if(count != 0){
+			glDeleteVertexArrays(1, &this->VAO);
+			this->initVAO();
+			this->SetVertxAttributePointers();
+		}
 	}
+	void changeScaleTo(glm::vec3 newscale) {
+		this->scale = newscale;
+		//initVAO();   //ÐžÐ§Ð•ÐÐ¬ ÐÐ• Ð¡Ð£ÐŸÐ•Ð 
+	}
+	void moveTo(const glm::vec3 position) {
+		this->position = position;
+	}
+
 
 	void printAll() {
 		std::cout << "\n";
