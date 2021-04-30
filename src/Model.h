@@ -8,7 +8,7 @@
 
 class Model {
 private:
-	Material* material;
+	Material material;
 	Texture* overrideTextureDiffuse;
 	Texture* overrideTextureSpecular;
 public:
@@ -20,7 +20,7 @@ private:
 	}
  
 public:
-	Model(glm::vec3 position, Material* material, Texture* orTexDif,
+	Model(glm::vec3 position, Material material, Texture* orTexDif,
 		Texture* orTexSpec, std::vector<Mesh*> meshes) {
 		this->position = position;
 		this->material = material;
@@ -36,9 +36,22 @@ public:
 			i->setOrigin(this->position);
 		}
 	}
+	Model(glm::vec3 position, Material material, Texture* orTexDif, Texture* orTexSpec, Mesh* mesh) {
+		this->position = position;
+		this->material = material;
+		this->overrideTextureDiffuse = orTexDif;
+		this->overrideTextureSpecular = orTexSpec;
+
+		this->meshes.push_back(new Mesh(mesh));
+	
+
+		for (auto&i : this->meshes) {
+			i->move(this->position);
+			i->setOrigin(this->position);
+		}
+	}
 	//OBJ file loaded model
-	Model(glm::vec3 position, Material* material, Texture* orTexDif,
-		Texture* orTexSpec, const std::string& filePath) {
+	Model(glm::vec3 position, Material material, Texture* orTexDif, Texture* orTexSpec, const std::string& filePath) {
 		this->position = position;
 		this->material = material;
 		this->overrideTextureDiffuse = orTexDif;
@@ -73,6 +86,14 @@ public:
 			i->scaleUp(vec);
 	}
 
+	void moveTo(glm::vec3 vec) {
+		for (auto& i : this->meshes)
+			i->moveTo(vec);
+	}
+	void scaleUpTo(glm::vec3 vec) {
+		for (auto& i : this->meshes)
+			i->changeScaleTo(vec);
+	}
 	
 
 	void update() {
@@ -87,7 +108,7 @@ public:
 		//Update the uniforms
 		this->updateUniforms();
 		//Update uniforms											
-		this->material->sendToShader(*shader);
+		this->material.sendToShader(*shader);
 		//Activate texture
 		//Draw
 		for (auto& i : this->meshes) {
@@ -98,6 +119,6 @@ public:
 	}
 
 	glm::vec3 getPosition() { return this->position; }
-
+	Material* getMaterial() { return &material; }
 
 };
