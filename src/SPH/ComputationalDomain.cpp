@@ -574,19 +574,87 @@ void SPH_CD::PRB_refresh() {
 	}
 }
 
-void SPH_CD::UpdateRendering(std::vector<Model*>* models) {
+void SPH_CD::UpdateRendering(std::vector<Model*>* models, Texture* tex, Texture* tex_specualar, std::vector<Material*>* materials) {
 	if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
 		std::cout << "SPH_CD::UpdateRendering\n";
 	}
 	//РЕНДЕРИНГ ВИРТУАЛЬНЫХ ЧАСТИЦ
-	for (auto*& i : (*models)[ModelId]->meshes) {
-		delete i;
+	//for (auto*& i : (*models)[ModelId]->meshes) {
+	//	delete i;
+	//}
+	//(*models)[ModelId]->meshes.resize(0);
+	//for (int i = 0;i < PRB.size();i++) {
+	//	//std::cout << i << "\n";
+	//	(*models)[ModelId]->meshes.push_back(new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, PRB[i].color), PRB[i].position, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(PRB[i].size)));
+	//}
+	//m_options.firstCycle = false;
+	//std::cout << "models: " << models->size() << "\n";
+	Mesh* mesh;
+	Material* material;
+	//for (int mat = 0;mat < materials->size(); mat++) {
+	//	if(mat >= MaterialId)
+	//		delete (*materials)[mat];
+	//}
+	//materials->resize(MaterialId);
+	if (m_options.firstCycle == true) {
+		m_options.firstCycle = false;
+		//std::cout << "before: " << models->size() << "\n";
+		//for (auto*& i : (*models)[ModelId]->meshes) {
+		//	delete i;
+		//}
+		//(*models)[ModelId]->meshes.resize(0);
+		for (int i = 0;i < PRB.size();i++) {
+			//std::cout << i << "\n";
+			//(*models)[ModelId]->meshes.push_back(new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, PRB[i].color), PRB[i].position, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(PRB[i].size)));
+			mesh = (new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, glm::vec3(0.3f)), PRB[i].position, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(PRB[i].size)));
+			material = (new Material(PRB[i].color, glm::vec3(0.9f), glm::vec3(1.f), 0, 1));
+			(*models).push_back(new Model(PRB[i].position, material, tex, tex_specualar, mesh));
+			(*models)[ModelId + i]->getMaterial()->ChangeLighting(PRB[i].color, glm::vec3(0.9f), glm::vec3(1.f));
+			(*models)[ModelId + i]->moveTo(PRB[i].position);
+			(*models)[ModelId + i]->scaleUpTo(glm::vec3(PRB[i].size));
+			delete material;
+			delete mesh;
+		}
+		//std::cout << "after: " << models->size() << "\n";
+
+		assignNewModels(ModelId + m_options.nrOfParticles[REAL] + m_options.nrOfParticles[BOUNDARY]);
 	}
-	(*models)[ModelId]->meshes.resize(0);
+	else {
+		//std::cout << "before: " << models->size() << "\n";
+		for (int m = 0;m < models->size();m++) {
+			if (m > CD_ModelId) {
+				delete (*models)[m];
+			}
+		}
+		models->resize(CD_ModelId);
+		//std::cout << "mid: " << models->size() << "\n";
+		for (int i = 0;i < PRB.size();i++) {
+			if (i < m_options.nrOfParticles[REAL] + m_options.nrOfParticles[BOUNDARY]) {
+				//(*models)[ModelId]->meshes[i]->changeColorTo(PRB[i].color);
+				//(*models)[ModelId]->meshes[i]->moveTo(PRB[i].position);
+				//(*models)[ModelId]->meshes[i]->changeScaleTo(glm::vec3(PRB[i].size));
+				//(*models)[ModelId]->meshes[i]->update();
+				(*models)[ModelId + i]->getMaterial()->ChangeLighting(PRB[i].color, glm::vec3(0.9f), glm::vec3(1.f));
+				(*models)[ModelId + i]->moveTo(PRB[i].position);
+				(*models)[ModelId + i]->scaleUpTo(glm::vec3(PRB[i].size));
+			}
+			else {
+				//std::cout << PRB[i].position.x << " " << PRB[i].position.y << " " << PRB[i].position.z << "\n";
+				//(*models)[ModelId]->meshes.push_back(new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, PRB[i].color), PRB[i].position, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(PRB[i].size)));
 
-
-	for (int i = 0;i < PRB.size();i++) {
-		(*models)[ModelId]->meshes.push_back(new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, PRB[i].color), PRB[i].position, glm::vec3(0.f), glm::vec3(0.f), glm::vec3( PRB[i].size)));
+				mesh = (new Mesh(&Quad(glm::vec3(-0.5f), Quad::QuadNormal(Quad::Z, Quad::PLUS), 1.f, 1.f, glm::vec3(0.3f)), PRB[i].position, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(PRB[i].size)));
+				//materials->push_back(new Material(PRB[i].color, glm::vec3(0.9f), glm::vec3(1.f), 0, 1));
+				//(*models).push_back(new Model(PRB[i].position, (*materials)[materials->size() - 1], tex, tex_specualar, mesh));
+				material = (new Material(PRB[i].color, glm::vec3(0.9f), glm::vec3(1.f), 0, 1));
+				(*models).push_back(new Model(PRB[i].position, material, tex, tex_specualar, mesh));
+				(*models)[ModelId + i]->getMaterial()->ChangeLighting(PRB[i].color, glm::vec3(0.9f), glm::vec3(1.f));
+				(*models)[ModelId + i]->moveTo(PRB[i].position);
+				(*models)[ModelId + i]->scaleUpTo(glm::vec3(PRB[i].size));
+				delete material;
+				delete mesh;
+			}
+		}
+		//std::cout << "after: " << models->size() << "\n";
 	}
 }
 
@@ -623,6 +691,7 @@ void SPH_CD::timeStep_thread(cd_prec dt, std::atomic<bool>& dataReadyForRender, 
 		std::cout << "SPH_CD::timeStep\n";
 	}
 	//Saving values from previous step to render
+
 	{
 		DeletingVirtualParticles();
 		BM.resetTeleportationData();
@@ -641,9 +710,6 @@ void SPH_CD::timeStep_thread(cd_prec dt, std::atomic<bool>& dataReadyForRender, 
 		i->refreshNeighbours();
 		i->m_velocity.dval = part_prec_3(0.f);
 	}
-
-
-
 
 	if (m_options.firstCycle == false) {
 		if (computationalDomain_mode == MODE_CD::CD_DEBUG) {
@@ -887,7 +953,6 @@ void SPH_CD::timeStep_thread(cd_prec dt, std::atomic<bool>& dataReadyForRender, 
 		}
 	}
 	else {
-		m_options.firstCycle = false;
 	}
 
 
@@ -1879,9 +1944,9 @@ SPH_CD::~SPH_CD() {
 
 
 
-#define COLORING_CONDITION(i) i->m_type == REAL
+//#define COLORING_CONDITION(i) i->m_type == REAL
 //#define COLORING_CONDITION(i) i->m_type == VIRTUAL
-//#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == BOUNDARY)or(i->m_type == VIRTUAL)
+#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == BOUNDARY)or(i->m_type == VIRTUAL)
 //#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == VIRTUAL)
 //#define COLORING_CONDITION(i) (i->m_type == REAL)or(i->m_type == BOUNDARY)
 void SPH_CD::Coloring() {
