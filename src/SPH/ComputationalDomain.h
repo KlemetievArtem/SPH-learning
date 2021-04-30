@@ -57,7 +57,7 @@ struct ParticleRendererBuffer {
 struct SPH_OPTIONS {
 	unsigned int nrOfParticles[ALLTYPES];
 
-	NEIGBOURS_SEARCH_ALGORITHM NBSAlg = DIRECT; // DIRECT	UNIFORM_GRID
+	NEIGBOURS_SEARCH_ALGORITHM NBSAlg = UNIFORM_GRID; // DIRECT	UNIFORM_GRID
 	//DIMENSIONS KernelDimension = D1;
 
 	part_prec smoothingKernelLengthCoefficient = 3.0;
@@ -128,7 +128,8 @@ public:
 	void Initilization();
 	//void InitialRendering(std::vector<Mesh*>* meshes);
 
-	void UpdateRendering(std::vector<Model*>* models);
+	//void UpdateRendering(std::vector<Model*>* models);
+	void UpdateRendering(std::vector<Model*>* models, Texture* tex, Texture* tex_specualar, std::vector<Material*>* materials);
 	void AfterRendering(std::vector<Model*>* models);
 
 
