@@ -22,12 +22,23 @@ private:
 	GLint diffuseTex;
 	GLint specularTex;
 public:
-	Material(glm::vec3 p_ambient,	glm::vec3 p_diffuse,	glm::vec3 p_specular,	GLint p_diffuseTex, GLint p_specularTex)
-		:ambient(p_ambient), diffuse(p_diffuse), specular(p_specular), diffuseTex(p_diffuseTex), specularTex(p_specularTex) {
-
+	Material() {}
+	Material(glm::vec3 p_ambient, glm::vec3 p_diffuse, glm::vec3 p_specular, GLint p_diffuseTex, GLint p_specularTex)
+		:ambient(p_ambient), diffuse(p_diffuse), specular(p_specular), diffuseTex(p_diffuseTex), specularTex(p_specularTex) { }
+	Material(Material* material){
+		ambient = material->ambient;
+		diffuse = material->diffuse;
+		specular = material->specular;
+		diffuseTex = material->diffuseTex;
+		specularTex = material->specularTex;
 	}
 	~Material(){}
 
+	void ChangeLighting(glm::vec3 p_ambient, glm::vec3 p_diffuse, glm::vec3 p_specular) {
+		ambient = p_ambient;
+		diffuse = p_diffuse;
+		specular = p_specular;
+	}
 	//Functions
 	void sendToShader(Shader& program) {
 		program.setVec3f(this->ambient, "material.ambient");
