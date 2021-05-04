@@ -622,7 +622,7 @@ void SPH_CD::UpdateRendering(std::vector<Model*>* models, Texture* tex, Texture*
 	else {
 		//std::cout << "before: " << models->size() << "\n";
 		for (int m = 0;m < models->size();m++) {
-			if (m > CD_ModelId) {
+			if (m >= CD_ModelId) {
 				delete (*models)[m];
 			}
 		}
